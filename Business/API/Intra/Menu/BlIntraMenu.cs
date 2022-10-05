@@ -15,7 +15,7 @@ namespace Business.API.Intra.Menu
             var registers = new MenuOutput("Cadastros", new("fas fa-edit", IconTypeEnum.FontAwesome), new List<MenuOutput>
             {
                 new("Usuários", new("fas fa-user-cog", IconTypeEnum.FontAwesome), "users"),
-                new("Jogadores", new("fas fa-users", IconTypeEnum.FontAwesome), "employee")
+                new("Pessoas", new("fas fa-users", IconTypeEnum.FontAwesome), "person")
             });
 
             menus.Add(new("Dashboard", new("dashboard", IconTypeEnum.Material), "home"));

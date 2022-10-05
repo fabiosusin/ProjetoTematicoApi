@@ -1,17 +1,17 @@
 ﻿using DAO.DBConnection;
-using DAO.Intra.EmployeeDAO;
+using DAO.Intra.PersonDAO;
 using DTO.Intra.Home.Output;
 
 namespace Business.API.Intra.Home
 {
     public class BlIntraHome
     {
-        private readonly IntraEmployeeDAO IntraEmployeeDAO;
+        private readonly IntraPersonDAO IntraPersonDAO;
         public BlIntraHome(XDataDatabaseSettings settings)
         {
-            IntraEmployeeDAO = new(settings);
+            IntraPersonDAO = new(settings);
         }
 
-        public HomeDataOutput GetHomeData() => new(IntraEmployeeDAO.EmployeesCount());
+        public HomeDataOutput GetHomeData() => new(IntraPersonDAO.PersonsCount());
     }
 }

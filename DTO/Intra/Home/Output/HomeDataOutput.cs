@@ -5,11 +5,11 @@ namespace DTO.Intra.Home.Output
 {
     public class HomeDataOutput : BaseApiOutput
     {
-        public HomeDataOutput(decimal employeeQuantity) : base(true)
+        public HomeDataOutput(decimal PersonQuantity) : base(true)
         {
-            Employee = new(employeeQuantity);
+            Person = new(PersonQuantity);
         }
 
-        public HomeDataItemInfo Employee { get; set; }
+        public HomeDataItemInfo Person { get; set; }
     }
 }
