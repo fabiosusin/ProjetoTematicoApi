@@ -62,7 +62,9 @@ namespace DAO.Intra.PersonDAO
 
         public long PersonsCount() => Repository.FindAll().Count();
 
-        public IEnumerable<Person> List(PersonListInput input) => Repository.FindAll();
+        public IEnumerable<Person> List(PersonListInput input) => input == null ?
+            Repository.Collection.FindAll() : input.Paginator == null ?
+            Repository.Collection.Find(GenerateFilters(input.Filters)) : Repository.Collection.Find(GenerateFilters(input.Filters)).SetSkip((input.Paginator.Page > 0 ? input.Paginator.Page - 1 : 0) * input.Paginator.ResultsPerPage).SetLimit(input.Paginator.ResultsPerPage);
 
         private static IMongoQuery GenerateFilters(PersonFiltersInput input)
         {

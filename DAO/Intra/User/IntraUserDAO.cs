@@ -67,10 +67,6 @@ namespace DAO.Intra.UserDAO
             FindAll() : input.Paginator == null ?
             Repository.Collection.Find(GenerateFilters(input.Filters)) : Repository.Collection.Find(GenerateFilters(input.Filters)).SetSkip((input.Paginator.Page > 0 ? input.Paginator.Page - 1 : 0) * input.Paginator.ResultsPerPage).SetLimit(input.Paginator.ResultsPerPage);
 
-        public IEnumerable<User> List(UserListInput input, FieldsBuilder<User> fields) => input == null ?
-            Repository.Collection.FindAll().SetFields(fields) : input.Paginator == null ?
-            Repository.Collection.Find(GenerateFilters(input.Filters)).SetFields(fields) : Repository.Collection.Find(GenerateFilters(input.Filters)).SetSkip((input.Paginator.Page > 0 ? input.Paginator.Page - 1 : 0) * input.Paginator.ResultsPerPage).SetLimit(input.Paginator.ResultsPerPage).SetFields(fields);
-
         private static IMongoQuery GenerateFilters(UserFiltersInput input)
         {
             var emptyResult = Query.And(Query.Empty);

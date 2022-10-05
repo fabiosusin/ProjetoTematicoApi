@@ -11,9 +11,9 @@ namespace XApi.Controllers.Intra.Person
     [ApiController]
     [ApiExplorerSettings(GroupName = "Pessoa"), Authorize(Policies.Bearer), Authorize(Policies.AppUser)]
     [Route("v1/Intra/Person")]
-    public class PersonController : BaseController<PersonController>
+    public class CompanyController : BaseController<CompanyController>
     {
-        public PersonController(ILogger<PersonController> logger, XDataDatabaseSettings settings) : base(logger) => Bl = new(settings);
+        public CompanyController(ILogger<CompanyController> logger, XDataDatabaseSettings settings) : base(logger) => Bl = new(settings);
         protected BlPerson Bl;
 
         [HttpPost, Route("upsert-Person")]
