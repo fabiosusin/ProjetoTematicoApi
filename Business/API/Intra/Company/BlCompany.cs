@@ -24,7 +24,7 @@ namespace Business.API.Intra.BlCompany
                 return baseValidation;
 
             var result = string.IsNullOrEmpty(input.Id) ? IntraCompanyDAO.Insert(input) : IntraCompanyDAO.Update(input);
-            return result == null ? new("Não foi possível cadastrar uma nova Empresa!") : new(true);
+            return result == null ? new("Não foi possível cadastrar um novo Parceiro!") : new(true);
         }
 
         public Company GetCompany(string cpfCnpj) => string.IsNullOrEmpty(cpfCnpj) ? null : IntraCompanyDAO.FindOne(x => x.Cnpj == cpfCnpj);
@@ -36,7 +36,7 @@ namespace Business.API.Intra.BlCompany
 
             var Company = IntraCompanyDAO.FindById(id);
             if (Company == null)
-                return new("Pessoa não encontrado!");
+                return new("Parceiro não encontrado!");
 
             IntraCompanyDAO.Remove(Company);
             return new(true);
@@ -46,7 +46,7 @@ namespace Business.API.Intra.BlCompany
         {
             var result = IntraCompanyDAO.List(input);
             if (!(result?.Any() ?? false))
-                return new("Nenhum Pessoa encontrado!");
+                return new("Nenhum Parceiro encontrado!");
 
             return new(result);
         }
@@ -63,7 +63,7 @@ namespace Business.API.Intra.BlCompany
                 return new("Informe um CNPJ válido!");
 
             if (IntraCompanyDAO.FindOne(x => x.Cnpj == input.Cnpj && x.Id != input.Id) != null)
-                return new("Já existe uma Empresa cadastrado com este CNPJ");
+                return new("Já existe um Parceiro cadastrado com este CNPJ");
 
             return new(true);
         }

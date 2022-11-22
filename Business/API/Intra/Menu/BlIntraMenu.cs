@@ -16,7 +16,10 @@ namespace Business.API.Intra.Menu
             {
                 new("Usuários", new("fas fa-user-cog", IconTypeEnum.FontAwesome), "users"),
                 new("Pessoas", new("fas fa-users", IconTypeEnum.FontAwesome), "person"),
-                new("Empresas", new("fa-solid fa-industry", IconTypeEnum.FontAwesome), "companies")
+                new("Parceiros", new("fa-solid fa-industry", IconTypeEnum.FontAwesome), "companies"),
+                new("Situação", new("fa-solid fa-industry", IconTypeEnum.FontAwesome), "situation"),
+                new("Entrevista", new("fa-solid fa-industry", IconTypeEnum.FontAwesome), "interview"),
+                new("Frequência", new("fa-solid fa-industry", IconTypeEnum.FontAwesome), "frequency")
             });
 
             menus.Add(new("Dashboard", new("dashboard", IconTypeEnum.Material), "home"));
