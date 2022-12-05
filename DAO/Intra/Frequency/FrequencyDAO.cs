@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace DAO.Intra.FrequencyDAO
 {
-    internal class FrequencyDAO : IBaseDAO<Frequency>
+    public class FrequencyDAO : IBaseDAO<Frequency>
     {
         internal RepositoryMongo<Frequency> Repository;
         public FrequencyDAO(IXDataDatabaseSettings settings) => Repository = new(settings?.MongoDBSettings);
@@ -58,8 +58,6 @@ namespace DAO.Intra.FrequencyDAO
 
         public IEnumerable<Frequency> FindAll() => Repository.FindAll();
 
-        public long FrequencysCount() => Repository.FindAll().Count();
-
-        public IEnumerable<Frequency> List() => Repository.Collection.FindAll()
+        public IEnumerable<Frequency> List() => Repository.Collection.FindAll();
     }
 }
