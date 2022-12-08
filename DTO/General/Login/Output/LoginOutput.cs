@@ -19,7 +19,7 @@ namespace DTO.General.Login.Output
             AccessTokenExpiration = input.AccessTokenExpiration;
         }
 
-        public Guid Id { get; set; }
+        public int Id { get; set; }
         public string Email { get; set; }
         public string AccessToken { get; set; }
         public string Cellphone { get; set; }

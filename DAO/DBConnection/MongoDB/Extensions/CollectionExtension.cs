@@ -46,7 +46,7 @@ namespace DAO.DBConnection.MongoDB.Extensions
             if (value == null)
                 throw new ArgumentNullException(nameof(value));
 
-            var currentData = collection.FindById(value.Id.ToString());
+            var currentData = collection.FindById(value.Id);
             if (currentData == null)
                 collection.Add(value);
             else
@@ -67,12 +67,12 @@ namespace DAO.DBConnection.MongoDB.Extensions
             return value.Id.ToString();
         }
 
-        public static TEntity FindById<TEntity>(this MongoCollection<TEntity> collection, string id)
+        public static TEntity FindById<TEntity>(this MongoCollection<TEntity> collection, int id)
         {
             if (collection == null)
                 throw new ArgumentNullException(nameof(collection));
 
-            return ObjectId.TryParse(id, out var _) ? collection.FindOneByIdAs<TEntity>(new ObjectId(id)) : default;
+            return ObjectId.TryParse(id.ToString(), out var _) ? collection.FindOneByIdAs<TEntity>(new ObjectId(id.ToString())) : default;
         }
     }
 }

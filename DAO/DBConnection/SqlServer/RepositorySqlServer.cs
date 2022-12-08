@@ -65,11 +65,11 @@ namespace DAO.DBConnection
 
         public virtual TEntity FindOne(Expression<Func<TEntity, bool>> predicate) => DbSet.Where(predicate).Take(1).FirstOrDefault();
 
-        public virtual TEntity FindById(Guid id) => DbSet.Find(id);
+        public virtual TEntity FindById(int id) => DbSet.Find(id);
 
         public virtual IEnumerable<TEntity> FindAll() => DbSet.ToList();
 
-        public virtual void RemoveById(Guid id)
+        public virtual void RemoveById(int id)
         {
             DbSet.Remove(DbSet.Find(id));
             SaveChanges();

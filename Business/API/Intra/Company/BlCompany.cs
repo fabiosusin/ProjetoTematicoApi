@@ -24,15 +24,15 @@ namespace Business.API.Intra.BlCompany
             if (!baseValidation.Success)
                 return baseValidation;
 
-            var result = input.Id== Guid.Empty ? IntraCompanyDAO.Insert(input) : IntraCompanyDAO.Update(input);
+            var result = input.Id == 0 ? IntraCompanyDAO.Insert(input) : IntraCompanyDAO.Update(input);
             return result == null ? new("Não foi possível cadastrar um novo Parceiro!") : new(true);
         }
 
         public Company GetCompany(string cpfCnpj) => string.IsNullOrEmpty(cpfCnpj) ? null : IntraCompanyDAO.FindOne(x => x.Cnpj == cpfCnpj);
 
-        public BaseApiOutput DeleteCompany(Guid id)
+        public BaseApiOutput DeleteCompany(int id)
         {
-            if (id == Guid.Empty)
+            if (id == 0)
                 return new("Requisição mal formada!");
 
             var Company = IntraCompanyDAO.FindById(id);

@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.IO;
+using Useful.Extensions.FilesExtension;
 using XApi.Controllers;
 
 namespace API.Controllers.Intra.FrequencyController
@@ -22,12 +24,23 @@ namespace API.Controllers.Intra.FrequencyController
         public IActionResult UpsertFrequency(Frequency input) => Ok(Bl.UpsertFrequency(input));
 
         [HttpGet, Route("get-by-id/{id}")]
-        public IActionResult GetFrequency(Guid id) => Ok(Bl.GetFrequency(id));
+        public IActionResult GetFrequency(int id) => Ok(Bl.GetFrequency(id));
 
         [HttpDelete, Route("delete/{id}")]
-        public IActionResult DeleteFrequency(Guid id) => Ok(Bl.DeleteFrequency(id));
+        public IActionResult DeleteFrequency(int id) => Ok(Bl.DeleteFrequency(id));
 
         [HttpPost, Route("list")]
         public IActionResult ListFrequency() => Ok(Bl.List());
+
+        [HttpGet, Route("export")]
+        public IActionResult Export()
+        {
+            var doc = Bl.Export();
+            if (doc == null)
+                return BadRequest();
+
+            var fileInfo = new FileInfo(doc.Path);
+            return string.IsNullOrEmpty(fileInfo.Extension) ? BadRequest() : Ok(File(FilesExtension.GetByteFromFile(doc.Path), FilesExtension.GetContentType(fileInfo.Extension), doc.Name + fileInfo.Extension));
+        }
     }
 }

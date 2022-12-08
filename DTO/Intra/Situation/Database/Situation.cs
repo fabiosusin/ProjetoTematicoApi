@@ -5,7 +5,7 @@ namespace DTO.Intra.Situation.Database
 {
     public class Situation : BaseData
     {
-        public Guid PersonId { get; set; }
+        public int PersonId { get; set; }
         public string PersonDocument { get; set; }
         public int ProcessNumber { get; set; }
         public string VaraOrigem { get; set; }

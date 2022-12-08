@@ -24,7 +24,7 @@ namespace API.Controllers.Intra.Situation
         public IActionResult GetSituation(int number) => Ok(Bl.GetSituation(number));
 
         [HttpDelete, Route("delete/{id}")]
-        public IActionResult DeleteSituation(Guid id) => Ok(Bl.DeleteSituation(id));
+        public IActionResult DeleteSituation(int id) => Ok(Bl.DeleteSituation(id));
 
         [HttpPost, Route("list")]
         public IActionResult ListSituation() => Ok(Bl.List());

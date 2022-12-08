@@ -14,8 +14,8 @@ namespace DAO.Base
         IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> predicate);
         TEntity FindOne();
         TEntity FindOne(Expression<Func<TEntity, bool>> predicate);
-        TEntity FindById(Guid id);
+        TEntity FindById(int id);
         IEnumerable<TEntity> FindAll();
-        DAOActionResultOutput RemoveById(Guid id);
+        DAOActionResultOutput RemoveById(int id);
     }
 }

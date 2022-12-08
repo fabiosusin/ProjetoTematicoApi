@@ -2,9 +2,11 @@
 using DAO.DBConnection;
 using DTO.General.DAO.Output;
 using DTO.Intra.Interview.Database;
+using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using Useful.Extensions;
 
 namespace DAO.Intra.InterviewDAO
 {
@@ -15,8 +17,9 @@ namespace DAO.Intra.InterviewDAO
 
         public DAOActionResultOutput Insert(Interview obj)
         {
+            obj.Id = NumberExtension.RandomNumber(6);
             var result = Repository.Insert(obj);
-            if (result?.Id == Guid.Empty)
+            if (result?.Id == 0)
                 return new("Não foi possível salvar o registro");
 
             return new(result);
@@ -25,13 +28,13 @@ namespace DAO.Intra.InterviewDAO
         public DAOActionResultOutput Update(Interview obj)
         {
             var result = Repository.Update(obj);
-            if (result?.Id == Guid.Empty)
+            if (result?.Id == 0)
                 return new("Não foi possível salvar o registro");
 
             return new(result);
         }
 
-        public DAOActionResultOutput Upsert(Interview obj) => obj.Id == Guid.Empty ? Insert(obj) : Update(obj);
+        public DAOActionResultOutput Upsert(Interview obj) =>obj.Id == 0 ? Insert(obj) : Update(obj);
 
         public DAOActionResultOutput Remove(Interview obj)
         {
@@ -39,7 +42,7 @@ namespace DAO.Intra.InterviewDAO
             return new(true);
         }
 
-        public DAOActionResultOutput RemoveById(Guid id)
+        public DAOActionResultOutput RemoveById(int id)
         {
             Repository.RemoveById(id);
             return new(true);
@@ -49,7 +52,7 @@ namespace DAO.Intra.InterviewDAO
 
         public Interview FindOne(Expression<Func<Interview, bool>> predicate) => Repository.FindOne(predicate);
 
-        public Interview FindById(Guid id) => Repository.FindById(id);
+        public Interview FindById(int id) => Repository.FindById(id);
 
         public IEnumerable<Interview> Find(Expression<Func<Interview, bool>> predicate) => Repository.Find(predicate);
 

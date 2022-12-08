@@ -3,6 +3,7 @@ using DAO.DBConnection;
 using DTO.General.DAO.Output;
 using DTO.Intra.Person.Database;
 using DTO.Intra.Person.Input;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.Builders;
 using System;
@@ -10,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
+using Useful.Extensions;
 
 namespace DAO.Intra.PersonDAO
 {
@@ -20,8 +22,9 @@ namespace DAO.Intra.PersonDAO
 
         public DAOActionResultOutput Insert(Person obj)
         {
+            obj.Id = NumberExtension.RandomNumber(6);
             var result = Repository.Insert(obj);
-            if (result?.Id == Guid.Empty)
+            if (result?.Id == 0)
                 return new("Não foi possível salvar o registro");
 
             return new(result);
@@ -30,13 +33,13 @@ namespace DAO.Intra.PersonDAO
         public DAOActionResultOutput Update(Person obj)
         {
             var result = Repository.Update(obj);
-            if (result?.Id == Guid.Empty)
+            if (result?.Id == 0)
                 return new("Não foi possível salvar o registro");
 
             return new(result);
         }
 
-        public DAOActionResultOutput Upsert(Person obj) => obj.Id == Guid.Empty ? Insert(obj) : Update(obj);
+        public DAOActionResultOutput Upsert(Person obj) =>obj.Id == 0 ? Insert(obj) : Update(obj);
 
         public DAOActionResultOutput Remove(Person obj)
         {
@@ -44,7 +47,7 @@ namespace DAO.Intra.PersonDAO
             return new(true);
         }
 
-        public DAOActionResultOutput RemoveById(Guid id)
+        public DAOActionResultOutput RemoveById(int id)
         {
             Repository.RemoveById(id);
             return new(true);
@@ -54,7 +57,7 @@ namespace DAO.Intra.PersonDAO
 
         public Person FindOne(Expression<Func<Person, bool>> predicate) => Repository.FindOne(predicate);
 
-        public Person FindById(Guid id) => Repository.FindById(id);
+        public Person FindById(int id) => Repository.FindById(id);
 
         public IEnumerable<Person> Find(Expression<Func<Person, bool>> predicate) => Repository.Find(predicate);
 

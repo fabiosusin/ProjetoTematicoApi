@@ -21,20 +21,20 @@ namespace Business.API.Intra.BlInterview
 
         public BaseApiOutput UpsertInterview(Interview input)
         {
-            input.PersonId = IntraPersonDAO.FindOne(x => x.CpfCnpj == input.PersonDocument)?.Id ?? Guid.Empty;
+            input.PersonId = IntraPersonDAO.FindOne(x => x.CpfCnpj == input.PersonDocument)?.Id ?? 0;
             var baseValidation = BasicValidation(input);
             if (!baseValidation.Success)
                 return baseValidation;
 
-            var result = input.Id == Guid.Empty ? InterviewDAO.Insert(input) : InterviewDAO.Update(input);
+            var result = input.Id == 0 ? InterviewDAO.Insert(input) : InterviewDAO.Update(input);
             return result == null ? new("Não foi possível cadastrar uma nova Entrevista!") : new(true);
         }
 
-        public Interview GetInterview(Guid id) => id == Guid.Empty ? null : InterviewDAO.FindOne(x => x.Id == id);
+        public Interview GetInterview(int id) => id == 0 ? null : InterviewDAO.FindOne(x => x.Id == id);
 
-        public BaseApiOutput DeleteInterview(Guid id)
+        public BaseApiOutput DeleteInterview(int id)
         {
-            if (id == Guid.Empty)
+            if (id == 0)
                 return new("Requisição mal formada!");
 
             var Interview = InterviewDAO.FindById(id);

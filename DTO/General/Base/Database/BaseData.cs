@@ -7,6 +7,6 @@ namespace DTO.General.Base.Database
 {
     public class BaseData : IBaseData
     {
-        public Guid Id { get; set; }
+        public int Id { get; set; }
     }
 }

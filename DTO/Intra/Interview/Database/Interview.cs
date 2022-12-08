@@ -5,7 +5,7 @@ namespace DTO.Intra.Interview.Database
 {
     public class Interview : BaseData
     {
-        public Guid PersonId { get; set; }
+        public int PersonId { get; set; }
         public string PersonDocument { get; set; }
         public decimal FamilyIncome { get; set; }
         public string Neighborhood { get; set; }

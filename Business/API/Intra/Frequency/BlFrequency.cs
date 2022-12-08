@@ -1,13 +1,17 @@
-﻿using DAO.DBConnection;
+﻿using Business.General;
+using DAO.DBConnection;
 using DAO.Intra.FrequencyDAO;
 using DAO.Intra.PersonDAO;
 using DAO.Intra.SituationDAO;
+using DTO.General.Api.Output;
 using DTO.General.Base.Api.Output;
 using DTO.Intra.Frequency.Output;
 using DTO.Intra.FrequencyDB.Database;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.Json;
 
 namespace Business.API.Intra.BlFrequency
 {
@@ -25,7 +29,7 @@ namespace Business.API.Intra.BlFrequency
 
         public BaseApiOutput UpsertFrequency(Frequency input)
         {
-            input.PersonId = IntraPersonDAO.FindOne(x => x.CpfCnpj == input.PersonDocument)?.Id ?? Guid.Empty;
+            input.PersonId = IntraPersonDAO.FindOne(x => x.CpfCnpj == input.PersonDocument)?.Id ?? 0;
             var baseValidation = BasicValidation(input);
             if (!baseValidation.Success)
                 return baseValidation;
@@ -33,7 +37,7 @@ namespace Business.API.Intra.BlFrequency
             var sit = SituationDAO.FindOne(x => x.PersonId == input.PersonId);
             if (sit == null)
                 return new("Situação processual não encontrada para esta Pessoa!");
-            
+
             var totalTime = (int)(input.ExitTime - input.EntryTime).TotalHours;
             sit.FulfilledHours += totalTime;
             sit.RemainingHours -= totalTime;
@@ -45,15 +49,15 @@ namespace Business.API.Intra.BlFrequency
             input.FulfilledHours = sit.FulfilledHours;
             input.ActivityTotalTime = totalTime;
 
-            var result = input.Id == Guid.Empty ? FrequencyDAO.Insert(input) : FrequencyDAO.Update(input);
+            var result = input.Id == 0 ? FrequencyDAO.Insert(input) : FrequencyDAO.Update(input);
             return result == null ? new("Não foi possível cadastrar uma nova Frequência!") : new(true);
         }
 
-        public Frequency GetFrequency(Guid id) => id == Guid.Empty ? null : FrequencyDAO.FindOne(x => x.Id == id);
+        public Frequency GetFrequency(int id) => id == 0 ? null : FrequencyDAO.FindOne(x => x.Id == id);
 
-        public BaseApiOutput DeleteFrequency(Guid id)
+        public BaseApiOutput DeleteFrequency(int id)
         {
-            if (id == Guid.Empty)
+            if (id == 0)
                 return new("Requisição mal formada!");
 
             var frequency = FrequencyDAO.FindById(id);
@@ -80,14 +84,29 @@ namespace Business.API.Intra.BlFrequency
             return new(result);
         }
 
-        public IEnumerable<Frequency> Export() => FrequencyDAO.List();
+        public GenerateDocOutput Export()
+        {
+            var data = FrequencyDAO.List();
+            if (!(data?.Any() ?? false))
+                return null;
+
+            var result = new List<Frequency>();
+            foreach (var item in data)
+                result.Add(CryptographyService.EncryptFrequency(item));
+
+            string json = JsonSerializer.Serialize(result);
+            var path = "C:\\frequency.json";
+            File.WriteAllText(path, json);
+
+            return new("Exportação_Frequência", path);
+        }
 
         private BaseApiOutput BasicValidation(Frequency input)
         {
             if (input == null)
                 return new("Requisição mal formada!");
 
-            if (input.Id != Guid.Empty)
+            if (input.Id != 0)
                 return new("Não é possível editar uma frequência!");
 
             if (string.IsNullOrEmpty(input.PersonDocument))

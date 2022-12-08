@@ -37,19 +37,14 @@ namespace DAO.DBConnection
 
         public virtual TEntity FindOne(Expression<Func<TEntity, bool>> predicate) => Collection.FindOne(Query<TEntity>.Where(predicate));
 
-        public virtual TEntity FindById(string id) => Collection.FindById(id?.ToString());
+        public virtual TEntity FindById(int id) => Collection.FindById(id);
 
         public virtual IEnumerable<TEntity> FindAll() => Collection.FindAll();
 
-        public virtual void RemoveById(Guid id) { }
+        public virtual void RemoveById(int id) { }
 
         public int SaveChanges() => 1;
 
         public void Dispose() { }
-
-        public TEntity FindById(Guid id)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

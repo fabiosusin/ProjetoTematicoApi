@@ -17,7 +17,7 @@ namespace Business.API.Hub.Account
     public class BlIntraAuth
     {
         private readonly AppUserDAO UserDAO;
-        
+
         public BlIntraAuth(XDataDatabaseSettings settings)
         {
             UserDAO = new(settings);
@@ -73,7 +73,7 @@ namespace Business.API.Hub.Account
             if (string.IsNullOrEmpty(input.Username))
                 return new("Nome de Usuário não informado!");
 
-            if (input.UserId == Guid.Empty)
+            if (input.UserId == 0)
             {
                 if (string.IsNullOrEmpty(input.Password))
                     return new("Senha não informada!");
@@ -94,11 +94,11 @@ namespace Business.API.Hub.Account
             if (input.IsMasterAdmin)
             {
                 var masterUser = UserDAO.FindOne(x => x.IsMasterAdmin == true);
-                if (masterUser?.Id != Guid.Empty && masterUser.Id != input.UserId)
+                if (masterUser?.Id != 0 && masterUser.Id != input.UserId)
                     return new("Usuário admin já cadastrado!");
             }
 
-            var result = input.UserId == Guid.Empty ? UserDAO.Insert(new AppUser(input)) : UserDAO.Update(new AppUser(input));
+            var result = input.UserId == 0 ? UserDAO.Insert(new AppUser(input)) : UserDAO.Update(new AppUser(input));
             if (result == null)
                 return new("Não foi possível salvar o usuário!");
 
@@ -126,9 +126,9 @@ namespace Business.API.Hub.Account
             return new BaseApiOutput(false, "Não foi possível enviar a senha temporária para o Email: " + account.Email);
         }
 
-        public BaseApiOutput DeleteUser(Guid id)
+        public BaseApiOutput DeleteUser(int id)
         {
-            if (id == Guid.Empty)
+            if (id == 0)
                 return new("Requisição mal formada!");
 
             var user = UserDAO.FindById(id);

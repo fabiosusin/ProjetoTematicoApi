@@ -21,10 +21,10 @@ namespace API.Controllers.Intra.Interview
         public IActionResult UpsertInterview(DTO.Intra.Interview.Database.Interview input) => Ok(Bl.UpsertInterview(input));
 
         [HttpGet, Route("get-by-id/{id}")]
-        public IActionResult GetInterview(Guid id) => Ok(Bl.GetInterview(id));
+        public IActionResult GetInterview(int id) => Ok(Bl.GetInterview(id));
 
         [HttpDelete, Route("delete/{id}")]
-        public IActionResult DeleteInterview(Guid id) => Ok(Bl.DeleteInterview(id));
+        public IActionResult DeleteInterview(int id) => Ok(Bl.DeleteInterview(id));
 
         [HttpPost, Route("list")]
         public IActionResult ListInterview() => Ok(Bl.List());

@@ -25,15 +25,15 @@ namespace Business.API.Intra.BlPerson
             if (!baseValidation.Success)
                 return baseValidation;
 
-            var result = input.Id == Guid.Empty ? IntraPersonDAO.Insert(input) : IntraPersonDAO.Update(input);
+            var result = input.Id == 0 ? IntraPersonDAO.Insert(input) : IntraPersonDAO.Update(input);
             return result == null ? new("Não foi possível cadastrar o novo Pessoa!") : new(true);
         }
 
-        public DTO.Intra.Person.Database.Person GetPerson(string cpfCnpj) => string.IsNullOrEmpty(cpfCnpj) ? null : IntraPersonDAO.FindOne(x => x.CpfCnpj == cpfCnpj);
+        public Person GetPerson(string cpfCnpj) => string.IsNullOrEmpty(cpfCnpj) ? null : IntraPersonDAO.FindOne(x => x.CpfCnpj == cpfCnpj);
 
-        public BaseApiOutput DeletePerson(Guid id)
+        public BaseApiOutput DeletePerson(int id)
         {
-            if (id == Guid.Empty)
+            if (id == 0)
                 return new("Requisição mal formada!");
 
             var Person = IntraPersonDAO.FindById(id);

@@ -2,12 +2,14 @@
 using DAO.DBConnection;
 using DTO.General.DAO.Output;
 using DTO.Intra.FrequencyDB.Database;
+using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using Useful.Extensions;
 
 namespace DAO.Intra.FrequencyDAO
 {
@@ -18,8 +20,9 @@ namespace DAO.Intra.FrequencyDAO
 
         public DAOActionResultOutput Insert(Frequency obj)
         {
+            obj.Id = NumberExtension.RandomNumber(6);
             var result = Repository.Insert(obj);
-            if (result?.Id == Guid.Empty)
+            if (result?.Id == 0)
                 return new("Não foi possível salvar o registro");
 
             return new(result);
@@ -28,13 +31,13 @@ namespace DAO.Intra.FrequencyDAO
         public DAOActionResultOutput Update(Frequency obj)
         {
             var result = Repository.Update(obj);
-            if (result?.Id == Guid.Empty)
+            if (result?.Id == 0)
                 return new("Não foi possível salvar o registro");
 
             return new(result);
         }
 
-        public DAOActionResultOutput Upsert(Frequency obj) => obj.Id == Guid.Empty ? Insert(obj) : Update(obj);
+        public DAOActionResultOutput Upsert(Frequency obj) =>obj.Id == 0 ? Insert(obj) : Update(obj);
 
         public DAOActionResultOutput Remove(Frequency obj)
         {
@@ -42,7 +45,7 @@ namespace DAO.Intra.FrequencyDAO
             return new(true);
         }
 
-        public DAOActionResultOutput RemoveById(Guid id)
+        public DAOActionResultOutput RemoveById(int id)
         {
             Repository.RemoveById(id);
             return new(true);
@@ -52,7 +55,7 @@ namespace DAO.Intra.FrequencyDAO
 
         public Frequency FindOne(Expression<Func<Frequency, bool>> predicate) => Repository.FindOne(predicate);
 
-        public Frequency FindById(Guid id) => Repository.FindById(id);
+        public Frequency FindById(int id) => Repository.FindById(id);
 
         public IEnumerable<Frequency> Find(Expression<Func<Frequency, bool>> predicate) => Repository.Find(predicate);
 

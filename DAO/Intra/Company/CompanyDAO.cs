@@ -3,6 +3,7 @@ using DAO.DBConnection;
 using DTO.General.DAO.Output;
 using DTO.Intra.Company.Database;
 using DTO.Intra.Company.Input;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.Builders;
 using System;
@@ -10,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
+using Useful.Extensions;
 
 namespace DAO.Intra.CompanyDao
 {
@@ -20,8 +22,9 @@ namespace DAO.Intra.CompanyDao
 
         public DAOActionResultOutput Insert(Company obj)
         {
+            obj.Id = NumberExtension.RandomNumber(6);
             var result = Repository.Insert(obj);
-            if (result?.Id == Guid.Empty)
+            if (result?.Id == 0)
                 return new("Não foi possível salvar o registro");
 
             return new(result);
@@ -30,13 +33,13 @@ namespace DAO.Intra.CompanyDao
         public DAOActionResultOutput Update(Company obj)
         {
             var result = Repository.Update(obj);
-            if (result?.Id == Guid.Empty)
+            if (result?.Id == 0)
                 return new("Não foi possível salvar o registro");
 
             return new(result);
         }
 
-        public DAOActionResultOutput Upsert(Company obj) => obj.Id == Guid.Empty ? Insert(obj) : Update(obj);
+        public DAOActionResultOutput Upsert(Company obj) =>obj.Id == 0 ? Insert(obj) : Update(obj);
 
         public DAOActionResultOutput Remove(Company obj)
         {
@@ -44,7 +47,7 @@ namespace DAO.Intra.CompanyDao
             return new(true);
         }
 
-        public DAOActionResultOutput RemoveById(Guid id)
+        public DAOActionResultOutput RemoveById(int id)
         {
             Repository.RemoveById(id);
             return new(true);
@@ -54,7 +57,7 @@ namespace DAO.Intra.CompanyDao
 
         public Company FindOne(Expression<Func<Company, bool>> predicate) => Repository.FindOne(predicate);
 
-        public Company FindById(Guid id) => Repository.FindById(id);
+        public Company FindById(int id) => Repository.FindById(id);
 
         public IEnumerable<Company> Find(Expression<Func<Company, bool>> predicate) => Repository.Find(predicate);
 
