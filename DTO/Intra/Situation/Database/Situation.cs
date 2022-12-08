@@ -1,10 +1,11 @@
 ﻿using DTO.General.Base.Database;
+using System;
 
 namespace DTO.Intra.Situation.Database
 {
     public class Situation : BaseData
     {
-        public string PersonId { get; set; }
+        public Guid PersonId { get; set; }
         public string PersonDocument { get; set; }
         public int ProcessNumber { get; set; }
         public string VaraOrigem { get; set; }

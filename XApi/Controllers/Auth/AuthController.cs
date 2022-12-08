@@ -88,8 +88,8 @@ namespace XApi.Controllers.Auth
 
             var claims = new List<Claim> {
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString("N")),
-                new Claim(JwtRegisteredClaimNames.UniqueName, account.Id),
-                new Claim(ClaimsTypes.AppUserId, account.Id),
+                new Claim(JwtRegisteredClaimNames.UniqueName, account.Id.ToString()),
+                new Claim(ClaimsTypes.AppUserId, account.Id.ToString()),
                 new Claim(AuthTypeData.UserId, account.Id.ToString())
             };
 
@@ -114,7 +114,7 @@ namespace XApi.Controllers.Auth
                 Issuer = tokenConfigurations.Issuer,
                 Audience = tokenConfigurations.Audience,
                 SigningCredentials = signingConfigurations.SigningCredentials,
-                Subject = new ClaimsIdentity(new GenericIdentity(account.Id, "Login"), claims),
+                Subject = new ClaimsIdentity(new GenericIdentity(account.Id.ToString(), "Login"), claims),
                 NotBefore = creation,
                 Expires = expiration
             });

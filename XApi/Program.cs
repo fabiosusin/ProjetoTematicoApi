@@ -1,4 +1,5 @@
 using DAO.DBConnection;
+using DAO.DBConnection.SqlServer;
 using DTO.API.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -32,6 +33,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<XDataDatabaseSettings>(config.GetSection(nameof(XDataDatabaseSettings)));
 builder.Services.AddSingleton(sp => sp.GetRequiredService<IOptions<XDataDatabaseSettings>>().Value);
+
 builder.Services.AddControllers(options => options.Filters.Add(new HttpResponseExceptionFilter(appSettings)));
 ConfigureJsonSerializer();
 ConfigureLocalizationService(builder.Services);

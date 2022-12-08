@@ -5,7 +5,6 @@ namespace DTO.Interface
 {
     public interface IBaseData
     {
-        [BsonId]
-        string Id { get; set; }
+        Guid Id { get; set; }
     }
 }

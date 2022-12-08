@@ -8,7 +8,7 @@ namespace DTO.Intra.User.Output
     {
         public LoginOutput(string msg) : base(msg) { }
 
-        public LoginOutput(Database.User input) : base(true)
+        public LoginOutput(Database.AppUser input) : base(true)
         {
             if (input == null)
                 return;
@@ -21,7 +21,7 @@ namespace DTO.Intra.User.Output
             IsMasterUser = input.IsMasterAdmin;
         }
 
-        public string Id { get; set; }
+        public Guid Id { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }

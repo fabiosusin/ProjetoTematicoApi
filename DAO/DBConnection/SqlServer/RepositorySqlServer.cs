@@ -18,7 +18,7 @@ namespace DAO.DBConnection
             Db = new(settings.ConnectionString);
             DbSet = Db.Set<TEntity>();
 
-            Db.RunMigrations();
+            //Db.RunMigrations();
         }
 
         public virtual TEntity Insert(IBaseData obj)
@@ -65,13 +65,13 @@ namespace DAO.DBConnection
 
         public virtual TEntity FindOne(Expression<Func<TEntity, bool>> predicate) => DbSet.Where(predicate).Take(1).FirstOrDefault();
 
-        public virtual TEntity FindById(string id) => DbSet.Find(new Guid(id));
+        public virtual TEntity FindById(Guid id) => DbSet.Find(id);
 
         public virtual IEnumerable<TEntity> FindAll() => DbSet.ToList();
 
-        public virtual void RemoveById(string id)
+        public virtual void RemoveById(Guid id)
         {
-            DbSet.Remove(DbSet.Find(new Guid(id)));
+            DbSet.Remove(DbSet.Find(id));
             SaveChanges();
         }
 

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DTO.API.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Business.API.Hub.Account;
+using System;
 
 namespace XApi.Controllers.Intra.Account
 {
@@ -27,7 +28,7 @@ namespace XApi.Controllers.Intra.Account
         public async Task<IActionResult> SendTempPassword(string userEmail) => Ok(await Bl.SendTempPassword(userEmail).ConfigureAwait(false));
 
         [HttpDelete, Route("delete/{id}")]
-        public IActionResult DeleteUser(string id) => Ok(Bl.DeleteUser(id));
+        public IActionResult DeleteUser(Guid id) => Ok(Bl.DeleteUser(id));
 
         [HttpPost, Route("list")]
         public IActionResult ListUser(UserListInput input) => Ok(Bl.List(input));

@@ -4,6 +4,7 @@ using DTO.API.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
 using XApi.Controllers;
 
 namespace API.Controllers.Intra.Situation
@@ -23,7 +24,7 @@ namespace API.Controllers.Intra.Situation
         public IActionResult GetSituation(int number) => Ok(Bl.GetSituation(number));
 
         [HttpDelete, Route("delete/{id}")]
-        public IActionResult DeleteSituation(string id) => Ok(Bl.DeleteSituation(id));
+        public IActionResult DeleteSituation(Guid id) => Ok(Bl.DeleteSituation(id));
 
         [HttpPost, Route("list")]
         public IActionResult ListSituation() => Ok(Bl.List());

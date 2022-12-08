@@ -36,7 +36,7 @@ namespace DAO.DBConnection.MongoDB.Extensions
             if (collection == null)
                 throw new ArgumentNullException(nameof(collection));
 
-            collection.Remove(Query<BaseData>.EQ(x => x.Id, id));
+         //   collection.Remove(Query<BaseData>.EQ(x => x.Id, id));
         }
 
         public static string Upsert<TEntity>(this MongoCollection<TEntity> collection, BaseData value) where TEntity : BaseData
@@ -61,8 +61,8 @@ namespace DAO.DBConnection.MongoDB.Extensions
             if (value == null)
                 throw new ArgumentNullException(nameof(value));
 
-            if (!ObjectId.TryParse(value.Id, out _))
-                value.Id = ObjectId.GenerateNewId().ToString();
+            //if (!ObjectId.TryParse(value.Id, out _))
+            //    value.Id = ObjectId.GenerateNewId().ToString();
             collection.Insert(value);
             return value.Id.ToString();
         }

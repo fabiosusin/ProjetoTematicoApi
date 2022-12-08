@@ -5,6 +5,7 @@ using DTO.Intra.FrequencyDB.Database;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
 using XApi.Controllers;
 
 namespace API.Controllers.Intra.FrequencyController
@@ -21,10 +22,10 @@ namespace API.Controllers.Intra.FrequencyController
         public IActionResult UpsertFrequency(Frequency input) => Ok(Bl.UpsertFrequency(input));
 
         [HttpGet, Route("get-by-id/{id}")]
-        public IActionResult GetFrequency(string id) => Ok(Bl.GetFrequency(id));
+        public IActionResult GetFrequency(Guid id) => Ok(Bl.GetFrequency(id));
 
         [HttpDelete, Route("delete/{id}")]
-        public IActionResult DeleteFrequency(string id) => Ok(Bl.DeleteFrequency(id));
+        public IActionResult DeleteFrequency(Guid id) => Ok(Bl.DeleteFrequency(id));
 
         [HttpPost, Route("list")]
         public IActionResult ListFrequency() => Ok(Bl.List());

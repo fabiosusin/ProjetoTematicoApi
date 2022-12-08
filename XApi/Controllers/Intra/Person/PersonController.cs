@@ -5,6 +5,7 @@ using DTO.Intra.Person.Input;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace XApi.Controllers.Intra.Person
 {
@@ -23,7 +24,7 @@ namespace XApi.Controllers.Intra.Person
         public IActionResult GetCustomer(string cpfCnpj) => Ok(Bl.GetPerson(cpfCnpj));
 
         [HttpDelete, Route("delete/{id}")]
-        public IActionResult DeleteCustomer(string id) => Ok(Bl.DeletePerson(id));
+        public IActionResult DeleteCustomer(Guid id) => Ok(Bl.DeletePerson(id));
 
         [HttpPost, Route("list")]
         public IActionResult ListCustomer(PersonListInput input) => Ok(Bl.List(input));

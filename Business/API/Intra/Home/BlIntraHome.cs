@@ -7,8 +7,8 @@ namespace Business.API.Intra.Home
 {
     public class BlIntraHome
     {
-        private readonly IntraPersonDAO IntraPersonDAO;
-        private readonly IntraCompanyDAO IntraCompanyDAO;
+        private readonly PersonDAO IntraPersonDAO;
+        private readonly CompanyDAO IntraCompanyDAO;
         public BlIntraHome(XDataDatabaseSettings settings)
         {
             IntraPersonDAO = new(settings);

@@ -15,7 +15,7 @@ namespace Business.API.Intra.BlFrequency
     {
         private readonly FrequencyDAO FrequencyDAO;
         private readonly SituationDAO SituationDAO;
-        private readonly IntraPersonDAO IntraPersonDAO;
+        private readonly PersonDAO IntraPersonDAO;
         public BlFrequency(XDataDatabaseSettings settings)
         {
             FrequencyDAO = new(settings);
@@ -25,7 +25,7 @@ namespace Business.API.Intra.BlFrequency
 
         public BaseApiOutput UpsertFrequency(Frequency input)
         {
-            input.PersonId = IntraPersonDAO.FindOne(x => x.CpfCnpj == input.PersonDocument)?.Id;
+            input.PersonId = IntraPersonDAO.FindOne(x => x.CpfCnpj == input.PersonDocument)?.Id ?? Guid.Empty;
             var baseValidation = BasicValidation(input);
             if (!baseValidation.Success)
                 return baseValidation;
@@ -45,15 +45,15 @@ namespace Business.API.Intra.BlFrequency
             input.FulfilledHours = sit.FulfilledHours;
             input.ActivityTotalTime = totalTime;
 
-            var result = string.IsNullOrEmpty(input.Id) ? FrequencyDAO.Insert(input) : FrequencyDAO.Update(input);
+            var result = input.Id == Guid.Empty ? FrequencyDAO.Insert(input) : FrequencyDAO.Update(input);
             return result == null ? new("Não foi possível cadastrar uma nova Frequência!") : new(true);
         }
 
-        public Frequency GetFrequency(string id) => string.IsNullOrEmpty(id) ? null : FrequencyDAO.FindOne(x => x.Id == id);
+        public Frequency GetFrequency(Guid id) => id == Guid.Empty ? null : FrequencyDAO.FindOne(x => x.Id == id);
 
-        public BaseApiOutput DeleteFrequency(string id)
+        public BaseApiOutput DeleteFrequency(Guid id)
         {
-            if (string.IsNullOrEmpty(id))
+            if (id == Guid.Empty)
                 return new("Requisição mal formada!");
 
             var frequency = FrequencyDAO.FindById(id);
@@ -87,7 +87,7 @@ namespace Business.API.Intra.BlFrequency
             if (input == null)
                 return new("Requisição mal formada!");
 
-            if (!string.IsNullOrEmpty(input.Id))
+            if (input.Id != Guid.Empty)
                 return new("Não é possível editar uma frequência!");
 
             if (string.IsNullOrEmpty(input.PersonDocument))

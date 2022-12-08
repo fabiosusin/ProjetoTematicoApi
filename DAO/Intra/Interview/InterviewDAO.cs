@@ -10,13 +10,13 @@ namespace DAO.Intra.InterviewDAO
 {
     public class InterviewDAO : IBaseDAO<Interview>
     {
-        internal RepositoryMongo<Interview> Repository;
-        public InterviewDAO(IXDataDatabaseSettings settings) => Repository = new(settings?.MongoDBSettings);
+        internal RepositorySqlServer<Interview> Repository;
+        public InterviewDAO(IXDataDatabaseSettings settings) => Repository = new(settings?.SqlServerSettings);
 
         public DAOActionResultOutput Insert(Interview obj)
         {
             var result = Repository.Insert(obj);
-            if (string.IsNullOrEmpty(result?.Id))
+            if (result?.Id == Guid.Empty)
                 return new("Não foi possível salvar o registro");
 
             return new(result);
@@ -25,13 +25,13 @@ namespace DAO.Intra.InterviewDAO
         public DAOActionResultOutput Update(Interview obj)
         {
             var result = Repository.Update(obj);
-            if (string.IsNullOrEmpty(result?.Id))
+            if (result?.Id == Guid.Empty)
                 return new("Não foi possível salvar o registro");
 
             return new(result);
         }
 
-        public DAOActionResultOutput Upsert(Interview obj) => string.IsNullOrEmpty(obj.Id) ? Insert(obj) : Update(obj);
+        public DAOActionResultOutput Upsert(Interview obj) => obj.Id == Guid.Empty ? Insert(obj) : Update(obj);
 
         public DAOActionResultOutput Remove(Interview obj)
         {
@@ -39,7 +39,7 @@ namespace DAO.Intra.InterviewDAO
             return new(true);
         }
 
-        public DAOActionResultOutput RemoveById(string id)
+        public DAOActionResultOutput RemoveById(Guid id)
         {
             Repository.RemoveById(id);
             return new(true);
@@ -49,12 +49,12 @@ namespace DAO.Intra.InterviewDAO
 
         public Interview FindOne(Expression<Func<Interview, bool>> predicate) => Repository.FindOne(predicate);
 
-        public Interview FindById(string id) => Repository.FindById(id);
+        public Interview FindById(Guid id) => Repository.FindById(id);
 
         public IEnumerable<Interview> Find(Expression<Func<Interview, bool>> predicate) => Repository.Find(predicate);
 
         public IEnumerable<Interview> FindAll() => Repository.FindAll();
 
-        public IEnumerable<Interview> List() => Repository.Collection.FindAll();
+        public IEnumerable<Interview> List() => Repository.FindAll();
     }
 }

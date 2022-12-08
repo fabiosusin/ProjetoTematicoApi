@@ -13,13 +13,13 @@ namespace DAO.Intra.FrequencyDAO
 {
     public class FrequencyDAO : IBaseDAO<Frequency>
     {
-        internal RepositoryMongo<Frequency> Repository;
-        public FrequencyDAO(IXDataDatabaseSettings settings) => Repository = new(settings?.MongoDBSettings);
+        internal RepositorySqlServer<Frequency> Repository;
+        public FrequencyDAO(IXDataDatabaseSettings settings) => Repository = new(settings?.SqlServerSettings);
 
         public DAOActionResultOutput Insert(Frequency obj)
         {
             var result = Repository.Insert(obj);
-            if (string.IsNullOrEmpty(result?.Id))
+            if (result?.Id == Guid.Empty)
                 return new("Não foi possível salvar o registro");
 
             return new(result);
@@ -28,13 +28,13 @@ namespace DAO.Intra.FrequencyDAO
         public DAOActionResultOutput Update(Frequency obj)
         {
             var result = Repository.Update(obj);
-            if (string.IsNullOrEmpty(result?.Id))
+            if (result?.Id == Guid.Empty)
                 return new("Não foi possível salvar o registro");
 
             return new(result);
         }
 
-        public DAOActionResultOutput Upsert(Frequency obj) => string.IsNullOrEmpty(obj.Id) ? Insert(obj) : Update(obj);
+        public DAOActionResultOutput Upsert(Frequency obj) => obj.Id == Guid.Empty ? Insert(obj) : Update(obj);
 
         public DAOActionResultOutput Remove(Frequency obj)
         {
@@ -42,7 +42,7 @@ namespace DAO.Intra.FrequencyDAO
             return new(true);
         }
 
-        public DAOActionResultOutput RemoveById(string id)
+        public DAOActionResultOutput RemoveById(Guid id)
         {
             Repository.RemoveById(id);
             return new(true);
@@ -52,12 +52,12 @@ namespace DAO.Intra.FrequencyDAO
 
         public Frequency FindOne(Expression<Func<Frequency, bool>> predicate) => Repository.FindOne(predicate);
 
-        public Frequency FindById(string id) => Repository.FindById(id);
+        public Frequency FindById(Guid id) => Repository.FindById(id);
 
         public IEnumerable<Frequency> Find(Expression<Func<Frequency, bool>> predicate) => Repository.Find(predicate);
 
         public IEnumerable<Frequency> FindAll() => Repository.FindAll();
 
-        public IEnumerable<Frequency> List() => Repository.Collection.FindAll();
+        public IEnumerable<Frequency> List() => Repository.FindAll();
     }
 }

@@ -41,10 +41,15 @@ namespace DAO.DBConnection
 
         public virtual IEnumerable<TEntity> FindAll() => Collection.FindAll();
 
-        public virtual void RemoveById(string id) => Collection.RemoveById(id);
+        public virtual void RemoveById(Guid id) { }
 
         public int SaveChanges() => 1;
 
         public void Dispose() { }
+
+        public TEntity FindById(Guid id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

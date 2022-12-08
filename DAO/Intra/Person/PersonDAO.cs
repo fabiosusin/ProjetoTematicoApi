@@ -13,15 +13,15 @@ using System.Text.RegularExpressions;
 
 namespace DAO.Intra.PersonDAO
 {
-    public class IntraPersonDAO : IBaseDAO<Person>
+    public class PersonDAO : IBaseDAO<Person>
     {
-        internal RepositoryMongo<Person> Repository;
-        public IntraPersonDAO(IXDataDatabaseSettings settings) => Repository = new(settings?.MongoDBSettings);
+        internal RepositorySqlServer<Person> Repository;
+        public PersonDAO(IXDataDatabaseSettings settings) => Repository = new(settings?.SqlServerSettings);
 
         public DAOActionResultOutput Insert(Person obj)
         {
             var result = Repository.Insert(obj);
-            if (string.IsNullOrEmpty(result?.Id))
+            if (result?.Id == Guid.Empty)
                 return new("Não foi possível salvar o registro");
 
             return new(result);
@@ -30,13 +30,13 @@ namespace DAO.Intra.PersonDAO
         public DAOActionResultOutput Update(Person obj)
         {
             var result = Repository.Update(obj);
-            if (string.IsNullOrEmpty(result?.Id))
+            if (result?.Id == Guid.Empty)
                 return new("Não foi possível salvar o registro");
 
             return new(result);
         }
 
-        public DAOActionResultOutput Upsert(Person obj) => string.IsNullOrEmpty(obj.Id) ? Insert(obj) : Update(obj);
+        public DAOActionResultOutput Upsert(Person obj) => obj.Id == Guid.Empty ? Insert(obj) : Update(obj);
 
         public DAOActionResultOutput Remove(Person obj)
         {
@@ -44,7 +44,7 @@ namespace DAO.Intra.PersonDAO
             return new(true);
         }
 
-        public DAOActionResultOutput RemoveById(string id)
+        public DAOActionResultOutput RemoveById(Guid id)
         {
             Repository.RemoveById(id);
             return new(true);
@@ -54,7 +54,7 @@ namespace DAO.Intra.PersonDAO
 
         public Person FindOne(Expression<Func<Person, bool>> predicate) => Repository.FindOne(predicate);
 
-        public Person FindById(string id) => Repository.FindById(id);
+        public Person FindById(Guid id) => Repository.FindById(id);
 
         public IEnumerable<Person> Find(Expression<Func<Person, bool>> predicate) => Repository.Find(predicate);
 
@@ -62,9 +62,11 @@ namespace DAO.Intra.PersonDAO
 
         public long PersonsCount() => Repository.FindAll().Count();
 
-        public IEnumerable<Person> List(PersonListInput input) => input == null ?
-            Repository.Collection.FindAll() : input.Paginator == null ?
-            Repository.Collection.Find(GenerateFilters(input.Filters)) : Repository.Collection.Find(GenerateFilters(input.Filters)).SetSkip((input.Paginator.Page > 0 ? input.Paginator.Page - 1 : 0) * input.Paginator.ResultsPerPage).SetLimit(input.Paginator.ResultsPerPage);
+        public IEnumerable<Person> List(PersonListInput input) => FindAll();
+
+        //public IEnumerable<Person> List(PersonListInput input) => input == null ?
+        //    Repository.Collection.FindAll() : input.Paginator == null ?
+        //    Repository.Collection.Find(GenerateFilters(input.Filters)) : Repository.Collection.Find(GenerateFilters(input.Filters)).SetSkip((input.Paginator.Page > 0 ? input.Paginator.Page - 1 : 0) * input.Paginator.ResultsPerPage).SetLimit(input.Paginator.ResultsPerPage);
 
         private static IMongoQuery GenerateFilters(PersonFiltersInput input)
         {

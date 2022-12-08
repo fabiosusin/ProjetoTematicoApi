@@ -13,15 +13,15 @@ using System.Text.RegularExpressions;
 
 namespace DAO.Intra.CompanyDao
 {
-    public class IntraCompanyDAO : IBaseDAO<Company>
+    public class CompanyDAO : IBaseDAO<Company>
     {
-        internal RepositoryMongo<Company> Repository;
-        public IntraCompanyDAO(IXDataDatabaseSettings settings) => Repository = new(settings?.MongoDBSettings);
+        internal RepositorySqlServer<Company> Repository;
+        public CompanyDAO(IXDataDatabaseSettings settings) => Repository = new(settings?.SqlServerSettings);
 
         public DAOActionResultOutput Insert(Company obj)
         {
             var result = Repository.Insert(obj);
-            if (string.IsNullOrEmpty(result?.Id))
+            if (result?.Id == Guid.Empty)
                 return new("Não foi possível salvar o registro");
 
             return new(result);
@@ -30,13 +30,13 @@ namespace DAO.Intra.CompanyDao
         public DAOActionResultOutput Update(Company obj)
         {
             var result = Repository.Update(obj);
-            if (string.IsNullOrEmpty(result?.Id))
+            if (result?.Id == Guid.Empty)
                 return new("Não foi possível salvar o registro");
 
             return new(result);
         }
 
-        public DAOActionResultOutput Upsert(Company obj) => string.IsNullOrEmpty(obj.Id) ? Insert(obj) : Update(obj);
+        public DAOActionResultOutput Upsert(Company obj) => obj.Id == Guid.Empty ? Insert(obj) : Update(obj);
 
         public DAOActionResultOutput Remove(Company obj)
         {
@@ -44,7 +44,7 @@ namespace DAO.Intra.CompanyDao
             return new(true);
         }
 
-        public DAOActionResultOutput RemoveById(string id)
+        public DAOActionResultOutput RemoveById(Guid id)
         {
             Repository.RemoveById(id);
             return new(true);
@@ -54,7 +54,7 @@ namespace DAO.Intra.CompanyDao
 
         public Company FindOne(Expression<Func<Company, bool>> predicate) => Repository.FindOne(predicate);
 
-        public Company FindById(string id) => Repository.FindById(id);
+        public Company FindById(Guid id) => Repository.FindById(id);
 
         public IEnumerable<Company> Find(Expression<Func<Company, bool>> predicate) => Repository.Find(predicate);
 
@@ -62,9 +62,11 @@ namespace DAO.Intra.CompanyDao
 
         public long CompanysCount() => Repository.FindAll().Count();
 
-        public IEnumerable<Company> List(CompanyListInput input) => input == null ?
-            Repository.Collection.FindAll(): input.Paginator == null ?
-            Repository.Collection.Find(GenerateFilters(input.Filters)): Repository.Collection.Find(GenerateFilters(input.Filters)).SetSkip((input.Paginator.Page > 0 ? input.Paginator.Page - 1 : 0) * input.Paginator.ResultsPerPage).SetLimit(input.Paginator.ResultsPerPage);
+        public IEnumerable<Company> List(CompanyListInput input) => FindAll();
+
+        //public IEnumerable<Company> List(CompanyListInput input) => input == null ?
+        //    Repository.Collection.FindAll(): input.Paginator == null ?
+        //    Repository.Collection.Find(GenerateFilters(input.Filters)): Repository.Collection.Find(GenerateFilters(input.Filters)).SetSkip((input.Paginator.Page > 0 ? input.Paginator.Page - 1 : 0) * input.Paginator.ResultsPerPage).SetLimit(input.Paginator.ResultsPerPage);
 
         private static IMongoQuery GenerateFilters(CompanyFiltersInput input)
         {

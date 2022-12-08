@@ -8,10 +8,10 @@ namespace DTO.Interface
     {
         TEntity Insert(IBaseData obj);
         void Remove(IBaseData obj);
-        void RemoveById(string id);
+        void RemoveById(Guid id);
         IEnumerable<TEntity> FindAll();
         IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> predicate);
-        TEntity FindById(string id);
+        TEntity FindById(Guid id);
         TEntity Update(IBaseData obj);
         int SaveChanges();
     }

@@ -4,6 +4,7 @@ using DTO.General.Base.Api.Output;
 using DTO.Intra.Person.Database;
 using DTO.Intra.Person.Input;
 using DTO.Intra.Person.Output;
+using System;
 using System.Linq;
 using Useful.Extensions;
 
@@ -11,7 +12,7 @@ namespace Business.API.Intra.BlPerson
 {
     public class BlPerson
     {
-        private readonly IntraPersonDAO IntraPersonDAO;
+        private readonly PersonDAO IntraPersonDAO;
 
         public BlPerson(XDataDatabaseSettings settings)
         {
@@ -24,15 +25,15 @@ namespace Business.API.Intra.BlPerson
             if (!baseValidation.Success)
                 return baseValidation;
 
-            var result = string.IsNullOrEmpty(input.Id) ? IntraPersonDAO.Insert(input) : IntraPersonDAO.Update(input);
+            var result = input.Id == Guid.Empty ? IntraPersonDAO.Insert(input) : IntraPersonDAO.Update(input);
             return result == null ? new("Não foi possível cadastrar o novo Pessoa!") : new(true);
         }
 
         public DTO.Intra.Person.Database.Person GetPerson(string cpfCnpj) => string.IsNullOrEmpty(cpfCnpj) ? null : IntraPersonDAO.FindOne(x => x.CpfCnpj == cpfCnpj);
 
-        public BaseApiOutput DeletePerson(string id)
+        public BaseApiOutput DeletePerson(Guid id)
         {
-            if (string.IsNullOrEmpty(id))
+            if (id == Guid.Empty)
                 return new("Requisição mal formada!");
 
             var Person = IntraPersonDAO.FindById(id);

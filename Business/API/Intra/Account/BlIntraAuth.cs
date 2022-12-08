@@ -7,6 +7,7 @@ using DTO.Intra.User.Database;
 using DTO.Intra.User.Input;
 using DTO.Intra.User.Output;
 using Services.Mobile.Email;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Useful.Extensions;
@@ -15,7 +16,7 @@ namespace Business.API.Hub.Account
 {
     public class BlIntraAuth
     {
-        private readonly IntraUserDAO UserDAO;
+        private readonly AppUserDAO UserDAO;
         
         public BlIntraAuth(XDataDatabaseSettings settings)
         {
@@ -72,7 +73,7 @@ namespace Business.API.Hub.Account
             if (string.IsNullOrEmpty(input.Username))
                 return new("Nome de Usuário não informado!");
 
-            if (string.IsNullOrEmpty(input.UserId))
+            if (input.UserId == Guid.Empty)
             {
                 if (string.IsNullOrEmpty(input.Password))
                     return new("Senha não informada!");
@@ -93,11 +94,11 @@ namespace Business.API.Hub.Account
             if (input.IsMasterAdmin)
             {
                 var masterUser = UserDAO.FindOne(x => x.IsMasterAdmin == true);
-                if (!string.IsNullOrEmpty(masterUser?.Id) && masterUser.Id != input.UserId)
+                if (masterUser?.Id != Guid.Empty && masterUser.Id != input.UserId)
                     return new("Usuário admin já cadastrado!");
             }
 
-            var result = string.IsNullOrEmpty(input.UserId) ? UserDAO.Insert(new User(input)) : UserDAO.Update(new User(input));
+            var result = input.UserId == Guid.Empty ? UserDAO.Insert(new AppUser(input)) : UserDAO.Update(new AppUser(input));
             if (result == null)
                 return new("Não foi possível salvar o usuário!");
 
@@ -125,9 +126,9 @@ namespace Business.API.Hub.Account
             return new BaseApiOutput(false, "Não foi possível enviar a senha temporária para o Email: " + account.Email);
         }
 
-        public BaseApiOutput DeleteUser(string id)
+        public BaseApiOutput DeleteUser(Guid id)
         {
-            if (string.IsNullOrEmpty(id))
+            if (id == Guid.Empty)
                 return new("Requisição mal formada!");
 
             var user = UserDAO.FindById(id);

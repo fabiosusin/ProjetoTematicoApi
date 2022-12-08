@@ -4,6 +4,7 @@ using DAO.Intra.PersonDAO;
 using DTO.General.Base.Api.Output;
 using DTO.Intra.Interview.Database;
 using DTO.Intra.Interview.Output;
+using System;
 using System.Linq;
 
 namespace Business.API.Intra.BlInterview
@@ -11,7 +12,7 @@ namespace Business.API.Intra.BlInterview
     public class BlInterview
     {
         private readonly InterviewDAO InterviewDAO;
-        private readonly IntraPersonDAO IntraPersonDAO;
+        private readonly PersonDAO IntraPersonDAO;
         public BlInterview(XDataDatabaseSettings settings)
         {
             InterviewDAO = new(settings);
@@ -20,20 +21,20 @@ namespace Business.API.Intra.BlInterview
 
         public BaseApiOutput UpsertInterview(Interview input)
         {
-            input.PersonId = IntraPersonDAO.FindOne(x => x.CpfCnpj == input.PersonDocument)?.Id;
+            input.PersonId = IntraPersonDAO.FindOne(x => x.CpfCnpj == input.PersonDocument)?.Id ?? Guid.Empty;
             var baseValidation = BasicValidation(input);
             if (!baseValidation.Success)
                 return baseValidation;
 
-            var result = string.IsNullOrEmpty(input.Id) ? InterviewDAO.Insert(input) : InterviewDAO.Update(input);
+            var result = input.Id == Guid.Empty ? InterviewDAO.Insert(input) : InterviewDAO.Update(input);
             return result == null ? new("Não foi possível cadastrar uma nova Entrevista!") : new(true);
         }
 
-        public Interview GetInterview(string id) => string.IsNullOrEmpty(id) ? null : InterviewDAO.FindOne(x => x.Id == id);
+        public Interview GetInterview(Guid id) => id == Guid.Empty ? null : InterviewDAO.FindOne(x => x.Id == id);
 
-        public BaseApiOutput DeleteInterview(string id)
+        public BaseApiOutput DeleteInterview(Guid id)
         {
-            if (string.IsNullOrEmpty(id))
+            if (id == Guid.Empty)
                 return new("Requisição mal formada!");
 
             var Interview = InterviewDAO.FindById(id);

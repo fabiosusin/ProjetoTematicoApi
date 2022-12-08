@@ -3,10 +3,10 @@ using DTO.Intra.User.Input;
 
 namespace DTO.Intra.User.Database
 {
-    public class User : BaseData
+    public class AppUser : BaseData
     {
-        public User() { }
-        public User(AddUserInput input)
+        public AppUser() { }
+        public AppUser(AddUserInput input)
         {
             if (input == null)
                 return;

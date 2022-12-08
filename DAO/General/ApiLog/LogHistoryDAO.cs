@@ -11,13 +11,13 @@ namespace DAO.General.Log
 {
     public class LogHistoryDAO : IBaseDAO<AppLogHistory>
     {
-        internal RepositoryMongo<AppLogHistory> Repository;
-        public LogHistoryDAO(IXDataDatabaseSettings settings) => Repository = new(settings?.MongoDBSettings);
+        internal RepositorySqlServer<AppLogHistory> Repository;
+        public LogHistoryDAO(IXDataDatabaseSettings settings) => Repository = new(settings?.SqlServerSettings);
 
         public DAOActionResultOutput Insert(AppLogHistory obj)
         {
             var result = Repository.Insert(obj);
-            if (string.IsNullOrEmpty(result?.Id))
+            if (result?.Id == Guid.Empty)
                 return new("Não foi possível salvar o registro");
 
             return new(result);
@@ -26,13 +26,13 @@ namespace DAO.General.Log
         public DAOActionResultOutput Update(AppLogHistory obj)
         {
             var result = Repository.Update(obj);
-            if (string.IsNullOrEmpty(result?.Id))
+            if (result?.Id == Guid.Empty)
                 return new("Não foi possível salvar o registro");
 
             return new(result);
         }
 
-        public DAOActionResultOutput Upsert(AppLogHistory obj) => string.IsNullOrEmpty(obj.Id) ? Insert(obj) : Update(obj);
+        public DAOActionResultOutput Upsert(AppLogHistory obj) => obj.Id == Guid.Empty ? Insert(obj) : Update(obj);
 
         public DAOActionResultOutput Remove(AppLogHistory obj)
         {
@@ -40,7 +40,7 @@ namespace DAO.General.Log
             return new(true);
         }
 
-        public DAOActionResultOutput RemoveById(string id)
+        public DAOActionResultOutput RemoveById(Guid id)
         {
             Repository.RemoveById(id);
             return new(true);
@@ -50,7 +50,7 @@ namespace DAO.General.Log
 
         public AppLogHistory FindOne(Expression<Func<AppLogHistory, bool>> predicate) => Repository.FindOne(predicate);
 
-        public AppLogHistory FindById(string id) => Repository.FindById(id);
+        public AppLogHistory FindById(Guid id) => Repository.FindById(id);
 
         public IEnumerable<AppLogHistory> Find(Expression<Func<AppLogHistory, bool>> predicate) => Repository.Find(predicate);
 

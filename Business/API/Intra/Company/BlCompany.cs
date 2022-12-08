@@ -4,6 +4,7 @@ using DTO.General.Base.Api.Output;
 using DTO.Intra.Company.Database;
 using DTO.Intra.Company.Input;
 using DTO.Intra.Company.Output;
+using System;
 using System.Linq;
 using Useful.Extensions;
 
@@ -11,7 +12,7 @@ namespace Business.API.Intra.BlCompany
 {
     public class BlCompany
     {
-        private readonly IntraCompanyDAO IntraCompanyDAO;
+        private readonly CompanyDAO IntraCompanyDAO;
         public BlCompany(XDataDatabaseSettings settings)
         {
             IntraCompanyDAO = new(settings);
@@ -23,15 +24,15 @@ namespace Business.API.Intra.BlCompany
             if (!baseValidation.Success)
                 return baseValidation;
 
-            var result = string.IsNullOrEmpty(input.Id) ? IntraCompanyDAO.Insert(input) : IntraCompanyDAO.Update(input);
+            var result = input.Id== Guid.Empty ? IntraCompanyDAO.Insert(input) : IntraCompanyDAO.Update(input);
             return result == null ? new("Não foi possível cadastrar um novo Parceiro!") : new(true);
         }
 
         public Company GetCompany(string cpfCnpj) => string.IsNullOrEmpty(cpfCnpj) ? null : IntraCompanyDAO.FindOne(x => x.Cnpj == cpfCnpj);
 
-        public BaseApiOutput DeleteCompany(string id)
+        public BaseApiOutput DeleteCompany(Guid id)
         {
-            if (string.IsNullOrEmpty(id))
+            if (id == Guid.Empty)
                 return new("Requisição mal formada!");
 
             var Company = IntraCompanyDAO.FindById(id);

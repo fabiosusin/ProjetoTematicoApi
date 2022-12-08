@@ -5,6 +5,7 @@ using DTO.Intra.Company.Input;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace XApi.Controllers.Intra.Company
 {
@@ -23,7 +24,7 @@ namespace XApi.Controllers.Intra.Company
         public IActionResult GetCompany(string cpfCnpj) => Ok(Bl.GetCompany(cpfCnpj));
 
         [HttpDelete, Route("delete/{id}")]
-        public IActionResult DeleteCompany(string id) => Ok(Bl.DeleteCompany(id));
+        public IActionResult DeleteCompany(Guid id) => Ok(Bl.DeleteCompany(id));
 
         [HttpPost, Route("list")]
         public IActionResult ListCompany(CompanyListInput input) => Ok(Bl.List(input));
