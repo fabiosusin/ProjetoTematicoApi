@@ -5,6 +5,7 @@ using DAO.Intra.PersonDAO;
 using DAO.Intra.SituationDAO;
 using DTO.General.Api.Output;
 using DTO.General.Base.Api.Output;
+using DTO.General.Excel.Input;
 using DTO.Intra.Frequency.Output;
 using DTO.Intra.FrequencyDB.Database;
 using System;
@@ -99,6 +100,46 @@ namespace Business.API.Intra.BlFrequency
             File.WriteAllText(path, json);
 
             return new("Exportação_Frequência", path);
+        }
+
+        public GenerateDocOutput GetExcel()
+        {
+            var data = List();
+            if (!(data?.Success ?? false))
+                return null;
+
+            var reportData = new ExcelValues();
+
+            #region HEADER TABELA
+            reportData.Collumns.Add("Compareceu");
+            reportData.Collumns.Add("Documento");
+            reportData.Collumns.Add("Atividade");
+            reportData.Collumns.Add("Data de Entrada");
+            reportData.Collumns.Add("Data de Saída");
+            reportData.Collumns.Add("Tempo de Atividade");
+            reportData.Collumns.Add("Horas Cumpridas");
+            reportData.Collumns.Add("Horas Remanescentes");
+            #endregion
+
+            #region DADOS DA TABELA
+
+            foreach (var item in data.Frequencies)
+            {
+                reportData.Values.Add(new List<string>
+                {
+                    item.Appear ? "Sim": "Não",
+                    item.PersonDocument,
+                    item.Activity,
+                    item.EntryTime.ToString("dd/MM/yyyy HH:mm"),
+                    item.ExitTime.ToString("dd/MM/yyyy HH:mm"),
+                    item.ActivityTotalTime.ToString(),
+                    item.FulfilledHours.ToString(),
+                    item.RemainingHours.ToString()
+                });
+            }
+            #endregion
+
+            return BlExcelWritter.GetExcel("Relatório de Frequência", reportData);
         }
 
         private BaseApiOutput BasicValidation(Frequency input)

@@ -32,6 +32,17 @@ namespace API.Controllers.Intra.FrequencyController
         [HttpPost, Route("list")]
         public IActionResult ListFrequency() => Ok(Bl.List());
 
+        [HttpGet, Route("report")]
+        public IActionResult Report()
+        {
+            var doc = Bl.GetExcel();
+            if (doc == null)
+                return BadRequest();
+
+            var fileInfo = new FileInfo(doc.Path);
+            return string.IsNullOrEmpty(fileInfo.Extension) ? BadRequest() : Ok(File(FilesExtension.GetByteFromFile(doc.Path), FilesExtension.GetContentType(fileInfo.Extension), doc.Name + fileInfo.Extension));
+        }
+
         [HttpGet, Route("export")]
         public IActionResult Export()
         {

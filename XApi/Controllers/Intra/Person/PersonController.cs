@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.IO;
+using Useful.Extensions.FilesExtension;
 
 namespace XApi.Controllers.Intra.Person
 {
@@ -28,5 +30,16 @@ namespace XApi.Controllers.Intra.Person
 
         [HttpPost, Route("list")]
         public IActionResult ListCustomer(PersonListInput input) => Ok(Bl.List(input));
+
+        [HttpGet, Route("export")]
+        public IActionResult Export()
+        {
+            var doc = Bl.Export();
+            if (doc == null)
+                return BadRequest();
+
+            var fileInfo = new FileInfo(doc.Path);
+            return string.IsNullOrEmpty(fileInfo.Extension) ? BadRequest() : Ok(File(FilesExtension.GetByteFromFile(doc.Path), FilesExtension.GetContentType(fileInfo.Extension), doc.Name + fileInfo.Extension));
+        }
     }
 }

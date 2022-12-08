@@ -5,6 +5,7 @@ using System.Text;
 using System.Security.Cryptography;
 using System.IO;
 using DTO.Intra.FrequencyDB.Database;
+using DTO.Intra.Person.Database;
 
 namespace Business.General
 {
@@ -86,6 +87,17 @@ namespace Business.General
             Appear = input.Appear
         };
 
+        public static Person DecryptPerson(Person input) => input == null ? null : new Person
+        {
+            Id = input.Id,
+            Name = Decrypt(input.Name),
+            CpfCnpj = Decrypt(input.CpfCnpj),
+            Naturally = Decrypt(input.Naturally),
+            MotherName = Decrypt(input.MotherName),
+            MaritalStatus = Decrypt(input.MaritalStatus),
+            BirthDay = input.BirthDay
+        };
+
         public static Frequency EncryptFrequency(Frequency input) => input == null ? null : new Frequency
         {
             Id = input.Id,
@@ -98,6 +110,17 @@ namespace Business.General
             FulfilledHours = input.FulfilledHours,
             RemainingHours = input.RemainingHours,
             Appear = input.Appear
+        };
+
+        public static Person EncryptPerson(Person input) => input == null ? null : new Person
+        {
+            Id = input.Id,
+            Name = Encrypt(input.Name),
+            CpfCnpj = Encrypt(input.CpfCnpj),
+            Naturally = Encrypt(input.Naturally),
+            MotherName = Encrypt(input.MotherName),
+            MaritalStatus = Encrypt(input.MaritalStatus),
+            BirthDay = input.BirthDay
         };
     }
 }

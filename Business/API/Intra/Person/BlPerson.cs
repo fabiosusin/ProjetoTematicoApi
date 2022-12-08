@@ -1,11 +1,16 @@
-﻿using DAO.DBConnection;
+﻿using Business.General;
+using DAO.DBConnection;
 using DAO.Intra.PersonDAO;
+using DTO.General.Api.Output;
 using DTO.General.Base.Api.Output;
 using DTO.Intra.Person.Database;
 using DTO.Intra.Person.Input;
 using DTO.Intra.Person.Output;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.Json;
 using Useful.Extensions;
 
 namespace Business.API.Intra.BlPerson
@@ -51,6 +56,23 @@ namespace Business.API.Intra.BlPerson
                 return new("Nenhum Pessoa encontrado!");
 
             return new(result);
+        }
+
+        public GenerateDocOutput Export()
+        {
+            var data = IntraPersonDAO.List(null);
+            if (!(data?.Any() ?? false))
+                return null;
+
+            var result = new List<Person>();
+            foreach (var item in data)
+                result.Add(CryptographyService.EncryptPerson(item));
+
+            string json = JsonSerializer.Serialize(result);
+            var path = "C:\\person.json";
+            File.WriteAllText(path, json);
+
+            return new("Exportação_Prestador", path);
         }
 
         private BaseApiOutput BasicValidation(Person input)
