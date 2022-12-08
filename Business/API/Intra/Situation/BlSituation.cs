@@ -1,4 +1,5 @@
 ﻿using DAO.DBConnection;
+using DAO.Intra.PersonDAO;
 using DAO.Intra.SituationDAO;
 using DTO.General.Base.Api.Output;
 using DTO.Intra.Situation.Database;
@@ -10,13 +11,16 @@ namespace Business.API.Intra.BlSituation
     public class BlSituation
     {
         private readonly SituationDAO SituationDAO;
+        private readonly IntraPersonDAO IntraPersonDAO;
         public BlSituation(XDataDatabaseSettings settings)
         {
             SituationDAO = new(settings);
+            IntraPersonDAO = new(settings);
         }
 
         public BaseApiOutput UpsertSituation(Situation input)
         {
+            input.PersonId = IntraPersonDAO.FindOne(x => x.CpfCnpj == input.PersonDocument)?.Id;
             var baseValidation = BasicValidation(input);
             if (!baseValidation.Success)
                 return baseValidation;
@@ -54,8 +58,20 @@ namespace Business.API.Intra.BlSituation
             if (input == null)
                 return new("Requisição mal formada!");
 
+            if (string.IsNullOrEmpty(input.PersonDocument))
+                return new("Documento da Pessoa não informado!");
+
+            if (IntraPersonDAO.FindOne(x => x.CpfCnpj == input.PersonDocument) == null)
+                return new("Pessoa não cadastrada no sistema!");
+
             if (SituationDAO.FindOne(x => x.ProcessNumber == input.ProcessNumber && x.Id != input.Id) != null)
                 return new("Já existe uma Situação Processual cadastrada com este Número de Processo");
+
+            if (SituationDAO.FindOne(x => x.PersonId == input.PersonId && x.Id != input.Id) != null)
+                return new("Pessoa já está vinculada a uma Situação Processual!");
+
+            if (input.RemainingHours <= 0)
+                return new("Horas a cumprir não informadas!");
 
             return new(true);
         }

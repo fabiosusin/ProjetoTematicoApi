@@ -1,6 +1,7 @@
 ﻿using Business.API.Intra.Menu;
 using DAO.DBConnection;
 using DTO.API.Auth;
+using DTO.Intra.Menu.Enum;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -18,7 +19,7 @@ namespace XApi.Controllers.Intra.Menu
             Bl = new(settings);
         }
 
-        [HttpGet, Route("get-menu")]
-        public IActionResult GetHubMenu() => Ok(BlIntraMenu.GetIntraMenu());
+        [HttpGet, Route("get-menu/{type}")]
+        public IActionResult GetHubMenu(MenuSystemTypeEnum type) => Ok(BlIntraMenu.GetIntraMenu(type));
     }
 }
