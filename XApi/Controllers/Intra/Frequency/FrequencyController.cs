@@ -1,6 +1,7 @@
 ﻿using Business.API.Intra.BlFrequency;
 using DAO.DBConnection;
 using DTO.API.Auth;
+using DTO.General.Api.Input;
 using DTO.Intra.FrequencyDB.Database;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -53,5 +54,8 @@ namespace API.Controllers.Intra.FrequencyController
             var fileInfo = new FileInfo(doc.Path);
             return string.IsNullOrEmpty(fileInfo.Extension) ? BadRequest() : Ok(File(FilesExtension.GetByteFromFile(doc.Path), FilesExtension.GetContentType(fileInfo.Extension), doc.Name + fileInfo.Extension));
         }
+
+        [HttpPost, Route("import")]
+        public IActionResult Import(ImportFileInput input) => Ok(Bl.Import(input));
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Business.API.Intra.BlPerson;
 using DAO.DBConnection;
 using DTO.API.Auth;
+using DTO.General.Api.Input;
 using DTO.Intra.Person.Input;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -41,5 +42,9 @@ namespace XApi.Controllers.Intra.Person
             var fileInfo = new FileInfo(doc.Path);
             return string.IsNullOrEmpty(fileInfo.Extension) ? BadRequest() : Ok(File(FilesExtension.GetByteFromFile(doc.Path), FilesExtension.GetContentType(fileInfo.Extension), doc.Name + fileInfo.Extension));
         }
+
+
+        [HttpPost, Route("import")]
+        public IActionResult Import(ImportFileInput input) => Ok(Bl.Import(input));
     }
 }

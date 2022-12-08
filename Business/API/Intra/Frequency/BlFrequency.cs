@@ -3,16 +3,20 @@ using DAO.DBConnection;
 using DAO.Intra.FrequencyDAO;
 using DAO.Intra.PersonDAO;
 using DAO.Intra.SituationDAO;
+using DTO.General.Api.Input;
 using DTO.General.Api.Output;
 using DTO.General.Base.Api.Output;
 using DTO.General.Excel.Input;
 using DTO.Intra.Frequency.Output;
 using DTO.Intra.FrequencyDB.Database;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace Business.API.Intra.BlFrequency
 {
@@ -95,11 +99,28 @@ namespace Business.API.Intra.BlFrequency
             foreach (var item in data)
                 result.Add(CryptographyService.EncryptFrequency(item));
 
-            string json = JsonSerializer.Serialize(result);
             var path = "C:\\frequency.json";
-            File.WriteAllText(path, json);
+            File.WriteAllText(path, JsonConvert.SerializeObject(result));
 
             return new("Exportação_Frequência", path);
+        }
+
+        public BaseApiOutput Import(ImportFileInput input)
+        {
+            if (string.IsNullOrEmpty(input?.DataBase64))
+                return new("Dados inválidos!");
+
+            try
+            {
+                var byteArray = Convert.FromBase64String(new Regex("data:application/json;base64,").Replace(input.DataBase64, ""));
+                var frequencies = JsonConvert.DeserializeObject<List<Frequency>>(Encoding.UTF8.GetString(byteArray));
+                foreach(var frequency in frequencies)
+                    FrequencyDAO.Upsert(CryptographyService.DecryptFrequency(frequency));
+
+            }
+            catch { return new("Dados em formato inválido!"); }
+
+            return new(true);
         }
 
         public GenerateDocOutput GetExcel()

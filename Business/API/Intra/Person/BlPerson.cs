@@ -1,16 +1,20 @@
 ﻿using Business.General;
 using DAO.DBConnection;
 using DAO.Intra.PersonDAO;
+using DTO.General.Api.Input;
 using DTO.General.Api.Output;
 using DTO.General.Base.Api.Output;
 using DTO.Intra.Person.Database;
 using DTO.Intra.Person.Input;
 using DTO.Intra.Person.Output;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using Useful.Extensions;
 
 namespace Business.API.Intra.BlPerson
@@ -68,11 +72,30 @@ namespace Business.API.Intra.BlPerson
             foreach (var item in data)
                 result.Add(CryptographyService.EncryptPerson(item));
 
-            string json = JsonSerializer.Serialize(result);
+            string json = JsonConvert.SerializeObject(result);
             var path = "C:\\person.json";
             File.WriteAllText(path, json);
 
             return new("Exportação_Prestador", path);
+        }
+
+        public BaseApiOutput Import(ImportFileInput input)
+        {
+            if (string.IsNullOrEmpty(input?.DataBase64))
+                return new("Dados inválidos!");
+
+            try
+            {
+                var data = new Regex("data:application/json;base64,").Replace(input.DataBase64, "");
+                var byteArray = Convert.FromBase64String(data);
+                var frequencies = JsonConvert.DeserializeObject<List<Person>>(Encoding.UTF8.GetString(byteArray));
+                foreach (var frequency in frequencies)
+                    IntraPersonDAO.Upsert(CryptographyService.DecryptPerson(frequency));
+
+            }
+            catch { return new("Dados em formato inválido!"); }
+
+            return new(true);
         }
 
         private BaseApiOutput BasicValidation(Person input)
