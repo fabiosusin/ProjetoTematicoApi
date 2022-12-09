@@ -26,7 +26,7 @@ namespace API.Controllers.Intra.Interview
         [HttpDelete, Route("delete/{id}")]
         public IActionResult DeleteInterview(int id) => Ok(Bl.DeleteInterview(id));
 
-        [HttpPost, Route("list")]
-        public IActionResult ListInterview() => Ok(Bl.List());
+        [HttpGet, Route("list")]
+        public IActionResult ListInterview(string document) => Ok(Bl.List(document));
     }
 }

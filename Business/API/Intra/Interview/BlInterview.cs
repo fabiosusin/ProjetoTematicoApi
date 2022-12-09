@@ -45,9 +45,9 @@ namespace Business.API.Intra.BlInterview
             return new(true);
         }
 
-        public InterviewListOutput List()
+        public InterviewListOutput List(string document)
         {
-            var result = InterviewDAO.List();
+            var result = InterviewDAO.List(document);
             if (!(result?.Any() ?? false))
                 return new("Nenhuma Entravista encontrada!");
 

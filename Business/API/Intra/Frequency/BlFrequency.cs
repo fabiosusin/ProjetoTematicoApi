@@ -7,6 +7,7 @@ using DTO.General.Api.Input;
 using DTO.General.Api.Output;
 using DTO.General.Base.Api.Output;
 using DTO.General.Excel.Input;
+using DTO.Intra.Frequency.Input;
 using DTO.Intra.Frequency.Output;
 using DTO.Intra.FrequencyDB.Database;
 using Newtonsoft.Json;
@@ -80,18 +81,18 @@ namespace Business.API.Intra.BlFrequency
             return new(true);
         }
 
-        public FrequencyListOutput List()
+        public FrequencyListOutput List(FrequencyListInput input)
         {
-            var result = FrequencyDAO.List();
+            var result = FrequencyDAO.List(input);
             if (!(result?.Any() ?? false))
                 return new("Nenhuma Frequência encontrada!");
 
             return new(result);
         }
 
-        public GenerateDocOutput Export()
+        public GenerateDocOutput Export(FrequencyListInput input)
         {
-            var data = FrequencyDAO.List();
+            var data = FrequencyDAO.List(input);
             if (!(data?.Any() ?? false))
                 return null;
 
@@ -123,9 +124,9 @@ namespace Business.API.Intra.BlFrequency
             return new(true);
         }
 
-        public GenerateDocOutput GetExcel()
+        public GenerateDocOutput GetExcel(FrequencyListInput input)
         {
-            var data = List();
+            var data = List(input);
             if (!(data?.Success ?? false))
                 return null;
 

@@ -58,6 +58,6 @@ namespace DAO.Intra.InterviewDAO
 
         public IEnumerable<Interview> FindAll() => Repository.FindAll();
 
-        public IEnumerable<Interview> List() => Repository.FindAll();
+        public IEnumerable<Interview> List(string document) => !string.IsNullOrEmpty(document) ? Repository.Find(x => x.PersonDocument.Contains(document)) : Repository.FindAll();
     }
 }

@@ -45,9 +45,9 @@ namespace Business.API.Intra.BlSituation
             return new(true);
         }
 
-        public SituationListOutput List()
+        public SituationListOutput List(int number)
         {
-            var result = SituationDAO.List();
+            var result = SituationDAO.List(number);
             if (!(result?.Any() ?? false))
                 return new("Nenhuma Situação encontrada!");
 

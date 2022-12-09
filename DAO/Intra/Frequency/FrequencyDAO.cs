@@ -1,6 +1,7 @@
 ﻿using DAO.Base;
 using DAO.DBConnection;
 using DTO.General.DAO.Output;
+using DTO.Intra.Frequency.Input;
 using DTO.Intra.FrequencyDB.Database;
 using MongoDB.Bson;
 using System;
@@ -61,6 +62,9 @@ namespace DAO.Intra.FrequencyDAO
 
         public IEnumerable<Frequency> FindAll() => Repository.FindAll();
 
-        public IEnumerable<Frequency> List() => Repository.FindAll();
+        public IEnumerable<Frequency> List(FrequencyListInput input) => input?.Filters == null ?
+            FindAll() : string.IsNullOrEmpty(input.Filters.Activity) && string.IsNullOrEmpty(input.Filters.CpfCnpj) ? FindAll() :
+            !string.IsNullOrEmpty(input.Filters.Activity) && !string.IsNullOrEmpty(input.Filters.CpfCnpj) ? Find(x => x.Activity.Contains(input.Filters.Activity) && x.PersonDocument.Contains(input.Filters.CpfCnpj)) :
+            !string.IsNullOrEmpty(input.Filters.CpfCnpj) ? Find(x => x.PersonDocument.Contains(input.Filters.CpfCnpj)) : Find(x => x.Activity.Contains(input.Filters.Activity));
     }
 }

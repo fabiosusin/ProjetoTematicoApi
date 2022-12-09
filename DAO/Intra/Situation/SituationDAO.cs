@@ -34,7 +34,7 @@ namespace DAO.Intra.SituationDAO
             return new(result);
         }
 
-        public DAOActionResultOutput Upsert(Situation obj) =>obj.Id == 0 ? Insert(obj) : Update(obj);
+        public DAOActionResultOutput Upsert(Situation obj) => obj.Id == 0 ? Insert(obj) : Update(obj);
 
         public DAOActionResultOutput Remove(Situation obj)
         {
@@ -58,6 +58,6 @@ namespace DAO.Intra.SituationDAO
 
         public IEnumerable<Situation> FindAll() => Repository.FindAll();
 
-        public IEnumerable<Situation> List() => Repository.FindAll();
+        public IEnumerable<Situation> List(int number) => number != 0 ? Repository.Find(x => x.ProcessNumber == number) : Repository.FindAll();
     }
 }

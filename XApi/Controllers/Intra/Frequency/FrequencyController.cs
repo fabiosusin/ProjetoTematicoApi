@@ -2,6 +2,7 @@
 using DAO.DBConnection;
 using DTO.API.Auth;
 using DTO.General.Api.Input;
+using DTO.Intra.Frequency.Input;
 using DTO.Intra.FrequencyDB.Database;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -31,12 +32,12 @@ namespace API.Controllers.Intra.FrequencyController
         public IActionResult DeleteFrequency(int id) => Ok(Bl.DeleteFrequency(id));
 
         [HttpPost, Route("list")]
-        public IActionResult ListFrequency() => Ok(Bl.List());
+        public IActionResult ListFrequency(FrequencyListInput input) => Ok(Bl.List(input));
 
-        [HttpGet, Route("report")]
-        public IActionResult Report()
+        [HttpPost, Route("report")]
+        public IActionResult Report(FrequencyListInput input)
         {
-            var doc = Bl.GetExcel();
+            var doc = Bl.GetExcel(input);
             if (doc == null)
                 return BadRequest();
 
@@ -44,10 +45,10 @@ namespace API.Controllers.Intra.FrequencyController
             return string.IsNullOrEmpty(fileInfo.Extension) ? BadRequest() : Ok(File(FilesExtension.GetByteFromFile(doc.Path), FilesExtension.GetContentType(fileInfo.Extension), doc.Name + fileInfo.Extension));
         }
 
-        [HttpGet, Route("export")]
-        public IActionResult Export()
+        [HttpPost, Route("export")]
+        public IActionResult Export(FrequencyListInput input)
         {
-            var doc = Bl.Export();
+            var doc = Bl.Export(input);
             if (doc == null)
                 return BadRequest();
 

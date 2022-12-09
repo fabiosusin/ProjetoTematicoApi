@@ -42,7 +42,7 @@ namespace DAO.Intra.UserDAO
             return new(result);
         }
 
-        public DAOActionResultOutput Upsert(AppUser obj) =>obj.Id == 0 ? Insert(obj) : Update(obj);
+        public DAOActionResultOutput Upsert(AppUser obj) => obj.Id == 0 ? Insert(obj) : Update(obj);
 
         public DAOActionResultOutput Remove(AppUser obj)
         {
@@ -66,24 +66,9 @@ namespace DAO.Intra.UserDAO
 
         public IEnumerable<AppUser> FindAll() => Repository.FindAll();
 
-        public IEnumerable<AppUser> List(UserListInput input) => input == null ?
-            FindAll() : input.Paginator == null ? FindAll() : FindAll();
-            //Repository.Collection.Find(GenerateFilters(input.Filters)) : Repository.Collection.Find(GenerateFilters(input.Filters)).SetSkip((input.Paginator.Page > 0 ? input.Paginator.Page - 1 : 0) * input.Paginator.ResultsPerPage).SetLimit(input.Paginator.ResultsPerPage);
-
-        private static IMongoQuery GenerateFilters(UserFiltersInput input)
-        {
-            var emptyResult = Query.And(Query.Empty);
-            if (input == null)
-                return emptyResult;
-
-            var queryList = new List<IMongoQuery>();
-            if (!string.IsNullOrEmpty(input.Name))
-                queryList.Add(Query<AppUser>.Matches(x => x.Name, $"(?i).*{string.Join(".*", Regex.Split(input.Name, @"\s+").Select(x => Regex.Escape(x)))}.*"));
-
-            if (!string.IsNullOrEmpty(input.Username))
-                queryList.Add(Query<AppUser>.Matches(x => x.Username, $"(?i).*{string.Join(".*", Regex.Split(input.Username, @"\s+").Select(x => Regex.Escape(x)))}.*"));
-
-            return queryList.Any() ? Query.And(queryList) : emptyResult;
-        }
+        public IEnumerable<AppUser> List(UserListInput input) => input?.Filters == null ?
+            FindAll() : string.IsNullOrEmpty(input.Filters.Name) && string.IsNullOrEmpty(input.Filters.Username) ? FindAll() :
+            !string.IsNullOrEmpty(input.Filters.Name) && !string.IsNullOrEmpty(input.Filters.Username) ? Find(x => x.Name.Contains(input.Filters.Name) && x.Username.Contains(input.Filters.Username)) :
+            !string.IsNullOrEmpty(input.Filters.Username) ? Find(x => x.Username.Contains(input.Filters.Username)) : Find(x => x.Name.Contains(input.Filters.Name));
     }
 }

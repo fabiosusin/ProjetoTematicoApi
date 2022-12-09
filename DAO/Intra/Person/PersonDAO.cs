@@ -65,26 +65,10 @@ namespace DAO.Intra.PersonDAO
 
         public long PersonsCount() => Repository.FindAll().Count();
 
-        public IEnumerable<Person> List(PersonListInput input) => FindAll();
+        public IEnumerable<Person> List(PersonListInput input) => input?.Filters == null ?
+            FindAll() : string.IsNullOrEmpty(input.Filters.Name) && string.IsNullOrEmpty(input.Filters.CpfCnpj) ? FindAll() :
+            !string.IsNullOrEmpty(input.Filters.Name) && !string.IsNullOrEmpty(input.Filters.CpfCnpj) ? Find(x => x.Name.Contains(input.Filters.Name) && x.CpfCnpj.Contains(input.Filters.CpfCnpj)) :
+            !string.IsNullOrEmpty(input.Filters.CpfCnpj) ? Find(x => x.CpfCnpj.Contains(input.Filters.CpfCnpj)) : Find(x => x.Name.Contains(input.Filters.Name));
 
-        //public IEnumerable<Person> List(PersonListInput input) => input == null ?
-        //    Repository.Collection.FindAll() : input.Paginator == null ?
-        //    Repository.Collection.Find(GenerateFilters(input.Filters)) : Repository.Collection.Find(GenerateFilters(input.Filters)).SetSkip((input.Paginator.Page > 0 ? input.Paginator.Page - 1 : 0) * input.Paginator.ResultsPerPage).SetLimit(input.Paginator.ResultsPerPage);
-
-        private static IMongoQuery GenerateFilters(PersonFiltersInput input)
-        {
-            var emptyResult = Query.And(Query.Empty);
-            if (input == null)
-                return emptyResult;
-
-            var queryList = new List<IMongoQuery>();
-            if (!string.IsNullOrEmpty(input.Name))
-                queryList.Add(Query<Person>.Matches(x => x.Name, $"(?i).*{string.Join(".*", Regex.Split(input.Name, @"\s+").Select(x => Regex.Escape(x)))}.*"));
-
-            if (!string.IsNullOrEmpty(input.CpfCnpj))
-                queryList.Add(Query<Person>.Matches(x => x.CpfCnpj, $"(?i).*{string.Join(".*", Regex.Split(input.CpfCnpj, @"\s+").Select(x => Regex.Escape(x)))}.*"));
-
-            return queryList.Any() ? Query.And(queryList) : emptyResult;
-        }
     }
 }
