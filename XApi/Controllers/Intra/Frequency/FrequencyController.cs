@@ -25,6 +25,17 @@ namespace API.Controllers.Intra.FrequencyController
         [HttpPost, Route("upsert-Frequency")]
         public IActionResult UpsertFrequency(Frequency input) => Ok(Bl.UpsertFrequency(input));
 
+        [HttpGet, Route("generate-doc/{id}")]
+        public IActionResult GenerateDoc(int id)
+        {
+            var doc = Bl.GenerateDoc(id);
+            if (doc == null)
+                return BadRequest();
+
+            var fileInfo = new FileInfo(doc.Path);
+            return string.IsNullOrEmpty(fileInfo.Extension) ? BadRequest() : Ok(File(FilesExtension.GetByteFromFile(doc.Path), FilesExtension.GetContentType(fileInfo.Extension), doc.Name + fileInfo.Extension));
+        }
+
         [HttpGet, Route("get-by-id/{id}")]
         public IActionResult GetFrequency(int id) => Ok(Bl.GetFrequency(id));
 

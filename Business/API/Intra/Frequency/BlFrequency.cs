@@ -3,6 +3,7 @@ using DAO.DBConnection;
 using DAO.Intra.FrequencyDAO;
 using DAO.Intra.PersonDAO;
 using DAO.Intra.SituationDAO;
+using DAO.Intra.UserDAO;
 using DTO.General.Api.Input;
 using DTO.General.Api.Output;
 using DTO.General.Base.Api.Output;
@@ -11,13 +12,17 @@ using DTO.Intra.Frequency.Input;
 using DTO.Intra.Frequency.Output;
 using DTO.Intra.FrequencyDB.Database;
 using Newtonsoft.Json;
+using PdfSharp.Drawing;
+using PdfSharp.Pdf;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using Useful.Service;
 
 namespace Business.API.Intra.BlFrequency
 {
@@ -38,7 +43,7 @@ namespace Business.API.Intra.BlFrequency
             input.PersonId = IntraPersonDAO.FindOne(x => x.CpfCnpj == input.PersonDocument)?.Id ?? 0;
             var baseValidation = BasicValidation(input);
             if (!baseValidation.Success)
-                return baseValidation;
+                return new(baseValidation.Message);
 
             var sit = SituationDAO.FindOne(x => x.PersonId == input.PersonId);
             if (sit == null)
@@ -115,7 +120,7 @@ namespace Business.API.Intra.BlFrequency
             {
                 var byteArray = Convert.FromBase64String(new Regex("data:application/json;base64,").Replace(input.DataBase64, ""));
                 var frequencies = JsonConvert.DeserializeObject<List<Frequency>>(Encoding.UTF8.GetString(byteArray));
-                foreach(var frequency in frequencies)
+                foreach (var frequency in frequencies)
                     FrequencyDAO.Upsert(CryptographyService.DecryptFrequency(frequency));
 
             }
@@ -162,6 +167,38 @@ namespace Business.API.Intra.BlFrequency
             #endregion
 
             return BlExcelWritter.GetExcel("Relatório de Frequência", reportData);
+        }
+
+        public GenerateDocOutput GenerateDoc(int id)
+        {
+            try
+            {
+                var personId = FrequencyDAO.FindById(id).PersonId;
+                var person = IntraPersonDAO.FindById(personId);
+
+                //Create PDF Document
+                var document = new PdfDocument();
+                //You will have to add Page in PDF Document
+                var page = document.AddPage();
+                //For drawing in PDF Page you will nedd XGraphics Object
+                var gfx = XGraphics.FromPdfPage(page);
+                //For Test you will have to define font to be used
+                var font = new XFont("Verdana", 20, XFontStyle.Bold);
+                //Finally use XGraphics & font object to draw text in PDF Page
+                gfx.DrawString($"Atesto que {person.Name}", font, XBrushes.Black, new XRect(0, 0, page.Width, page.Height), XStringFormats.Center);
+                gfx.DrawString($"CPF {person.CpfCnpj},", font, XBrushes.Black, new XRect(0, 30, page.Width, page.Height), XStringFormats.Center);
+                gfx.DrawString($"recebeu atendimento nesta Central", font, XBrushes.Black, new XRect(0, 60, page.Width, page.Height), XStringFormats.Center);
+                gfx.DrawString($"na Tarde de Hoje", font, XBrushes.Black, new XRect(0, 90, page.Width, page.Height), XStringFormats.Center);
+
+                var fileName = "frequência.pdf";
+                //Specify file name of the PDF file
+                var file = $"{EnvironmentService.DocumentBasePath}\\" + fileName;
+                //Save PDF File
+                document.Save(file);
+
+                return new(fileName, file);
+            }
+            catch { return null; }
         }
 
         private BaseApiOutput BasicValidation(Frequency input)
