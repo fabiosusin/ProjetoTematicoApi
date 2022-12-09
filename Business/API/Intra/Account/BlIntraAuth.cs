@@ -61,42 +61,9 @@ namespace Business.API.Hub.Account
 
         public BaseApiOutput UpsertUser(AddUserInput input)
         {
-            if (input == null)
-                return new("Requisição mal formada!");
-
-            if (string.IsNullOrEmpty(input.Name))
-                return new("Nome não informado!");
-
-            if (string.IsNullOrEmpty(input.Email))
-                return new("Email não informado!");
-
-            if (string.IsNullOrEmpty(input.Username))
-                return new("Nome de Usuário não informado!");
-
-            if (input.UserId == 0)
-            {
-                if (string.IsNullOrEmpty(input.Password))
-                    return new("Senha não informada!");
-
-                if (FindAccountByEmail(input.Email).Success)
-                    return new("Usuário já cadastrado com este Email!");
-
-                if (UserDAO.FindOne(x => x.Username == input.Username) != null)
-                    return new("Usuário já cadastrado com este nome!");
-
-            }
-
-            if (!string.IsNullOrEmpty(input.Password) && input.Password != input.PasswordValidation)
-                return new("As senhas não coincidem!");
-
-            var permissions = input.Permissions;
-
-            if (input.IsMasterAdmin)
-            {
-                var masterUser = UserDAO.FindOne(x => x.IsMasterAdmin == true);
-                if (masterUser?.Id != 0 && masterUser.Id != input.UserId)
-                    return new("Usuário admin já cadastrado!");
-            }
+            var validation = BasicValidation(input);
+            if (!validation.Success)
+                return validation;
 
             var result = input.UserId == 0 ? UserDAO.Insert(new AppUser(input)) : UserDAO.Update(new AppUser(input));
             if (result == null)
@@ -146,6 +113,39 @@ namespace Business.API.Hub.Account
                 return new("Nenhum Usuário encontrado!");
 
             return new(result);
+        }
+
+        private BaseApiOutput BasicValidation(AddUserInput input)
+        {
+            if (input == null)
+                return new("Requisição mal formada!");
+
+            if (string.IsNullOrEmpty(input.Name))
+                return new("Nome não informado!");
+
+            if (string.IsNullOrEmpty(input.Email))
+                return new("Email não informado!");
+
+            if (string.IsNullOrEmpty(input.Username))
+                return new("Nome de Usuário não informado!");
+
+            if (input.UserId == 0)
+            {
+                if (string.IsNullOrEmpty(input.Password))
+                    return new("Senha não informada!");
+
+                if (FindAccountByEmail(input.Email).Success)
+                    return new("Usuário já cadastrado com este Email!");
+
+                if (UserDAO.FindOne(x => x.Username == input.Username) != null)
+                    return new("Usuário já cadastrado com este nome!");
+
+            }
+
+            if (input.Password != input.PasswordValidation)
+                return new("As senhas não coincidem!");
+
+            return new(true);
         }
     }
 }

@@ -3,14 +3,9 @@ using DAO.DBConnection;
 using DTO.General.DAO.Output;
 using DTO.Intra.User.Database;
 using DTO.Intra.User.Input;
-using MongoDB.Bson;
-using MongoDB.Driver;
-using MongoDB.Driver.Builders;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text.RegularExpressions;
 using Useful.Extensions;
 
 namespace DAO.Intra.UserDAO
@@ -32,9 +27,6 @@ namespace DAO.Intra.UserDAO
 
         public DAOActionResultOutput Update(AppUser obj)
         {
-            if (string.IsNullOrEmpty(obj.Password))
-                obj.Password = FindById(obj.Id)?.Password;
-
             var result = Repository.Update(obj);
             if (result?.Id == 0)
                 return new("Não foi possível salvar o registro");
